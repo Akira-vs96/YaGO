@@ -1,0 +1,43 @@
+%% Generated from 02-system-architecture.md; edit the Mermaid block there.
+flowchart TB
+    Client["Клиент / водитель / курьер / ресторан"] --> Web["React: клиентские экраны"]
+    Staff["Администратор / оператор техники"] --> AdminUI["React: экраны управления"]
+    Web -->|"HTTPS REST + Socket.IO"| Edge["Nginx / HTTPS / статические файлы"]
+    AdminUI -->|"HTTPS REST + Socket.IO"| Edge
+    Web -->|"карта и тайлы; браузерный ключ"| MapGL["2ГИС MapGL / Map Tiles"]
+
+    subgraph Backend["NestJS — один backend"]
+        API["Controllers / проверка входных данных"]
+        Auth["П1: Auth / Sessions / RBAC"]
+        Orders["П3: Orders / каталог / назначение"]
+        Maps["П2: Maps / Routing / Tracking"]
+        Rentals["П4: Scooter / Bike / Rentals"]
+        Admin["П5: Admin / Analytics / Tariffs / Zones"]
+        RT["П2: Socket.IO Gateway"]
+        Storage["Репозитории / транзакции"]
+    end
+
+    Edge --> API
+    Edge <-->|"Socket.IO"| RT
+    API --> Auth
+    RT --> Auth
+    API --> Orders
+    API --> Maps
+    API --> Rentals
+    API --> Admin
+    Orders -->|"маршрут и геопоиск"| Maps
+    Rentals -->|"общий заказ"| Orders
+    Orders -->|"тариф и зона"| Admin
+    Rentals -->|"тариф и зона"| Admin
+    Maps -->|"серверный HTTP, тайм-аут"| Routing["2ГИС Routing API"]
+    Rentals -->|"unlock / lock с command_id"| Emulator["Эмулятор замка и телеметрии"]
+    Emulator -->|"подтверждение и координаты"| Rentals
+    Auth --> Storage
+    Orders --> Storage
+    Maps --> Storage
+    Rentals --> Storage
+    Admin --> Storage
+    Storage --> DB[("PostgreSQL + PostGIS")]
+    Orders -.->|"после фиксации"| RT
+    Rentals -.->|"после фиксации"| RT
+    Maps -.->|"доступные подписчику координаты"| RT

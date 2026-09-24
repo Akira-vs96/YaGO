@@ -1,0 +1,28 @@
+%% Generated from 02-system-architecture.md; edit the Mermaid block there.
+sequenceDiagram
+    actor C as Клиент
+    participant API as Auth + Scooter API
+    participant O as Orders + Rentals
+    participant DB as PostgreSQL
+    participant E as Эмулятор
+    participant G as Socket.IO Gateway
+    C->>API: Забронировать vehicle_id + ключ идемпотентности
+    API->>API: Пользователь, права, входные данные
+    API->>O: Создать бронь
+    O->>DB: Транзакция: доступность техники, orders + rentals
+    DB-->>O: Commit либо конфликт
+    O-->>C: Подтверждённая бронь либо ошибка
+    C->>API: QR + команда старта своей брони
+    API->>O: Проверить владельца, срок и статус
+    O->>DB: Сохранить unlocking и command_id
+    O->>E: unlock(command_id, vehicle_id)
+    alt Подтверждён успешный unlock
+        E-->>O: Команда выполнена
+        O->>DB: Транзакция: active, in_use, время начала
+        DB-->>O: Commit
+        O->>G: Изменение заказа и аренды
+        G-->>C: Актуальное состояние
+    else Тайм-аут или ошибка
+        O->>DB: Сохранить результат проверки или инцидент
+        O-->>C: Состояние команды, повторное чтение
+    end

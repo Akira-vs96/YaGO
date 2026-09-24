@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="Шесть схем YaGo для второй недели: ER-модель, текущая и целевая архитектура, запуск аренды и состояния техники и аренды.">
+    <title>YaGo · Схемы второй недели</title>
+    <style>
+      :root {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #20352e;
+        background: #f3f5f1;
+        line-height: 1.6;
+        --accent: #205c47;
+        --muted: #55685e;
+        --border: #dce4dc;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      a { color: var(--accent); text-underline-offset: .2em; }
+      a:hover { color: #0a3527; }
+      a:focus-visible { outline: 3px solid #d69435; outline-offset: 5px; border-radius: 3px; }
+      .skip { position: absolute; top: -5rem; left: 1rem; z-index: 1; padding: .7rem 1rem; background: white; }
+      .skip:focus { top: 1rem; }
+      .page { max-width: 1240px; margin: auto; padding: 0 32px; }
+      .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: center; padding: 25px 0; border-bottom: 1px solid var(--border); }
+      .brand { font-weight: 800; letter-spacing: -.04em; font-size: 26px; text-decoration: none; }
+      .topbar > a:last-child { font-size: 14px; }
+      .intro { padding: 53px 0 30px; max-width: 860px; }
+      .eyebrow { margin: 0 0 12px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+      h1 { font-size: clamp(32px, 4.5vw, 52px); line-height: 1.12; letter-spacing: -.045em; margin: 0 0 20px; font-weight: 750; }
+      .lead { font-size: 18px; line-height: 1.7; max-width: 740px; margin: 0; color: var(--muted); }
+      nav { display: flex; flex-wrap: wrap; gap: 9px; margin: 0 0 26px; }
+      nav a { background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 7px 14px; font-size: 13px; text-decoration: none; }
+      nav a:hover { background: #eaf1e9; }
+      .reading-note { margin: 0 0 32px; padding: 17px 20px; background: #e8eee4; border-radius: 10px; color: #405546; font-size: 14px; }
+      .reading-note p { margin: 0; }
+      .reading-note p + p { margin-top: 6px; }
+      main { display: grid; gap: 28px; }
+      .card { scroll-margin-top: 24px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: white; box-shadow: 0 4px 18px rgb(28 57 40 / 3%); }
+      .card-head { display: flex; align-items: flex-start; gap: 18px; padding: 28px 30px 22px; }
+      .number { flex: 0 0 40px; display: grid; place-items: center; height: 40px; border-radius: 10px; background: #edf2e9; font-size: 13px; font-weight: 700; color: var(--accent); }
+      .card-copy { min-width: 0; flex: 1; }
+      .card-title { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; }
+      h2 { font-size: clamp(21px, 3vw, 26px); line-height: 1.3; letter-spacing: -.025em; margin: 0; }
+      .badge { border-radius: 5px; padding: 3px 8px; font-size: 11px; font-weight: 650; white-space: nowrap; color: #49634f; background: #edf2e9; }
+      .badge-current { background: #e7effa; color: #365782; }
+      .description { margin: 9px 0 0; color: var(--muted); font-size: 15px; max-width: 900px; }
+      figure { margin: 0; }
+      .preview { display: flex; justify-content: center; align-items: center; background: #fff; border-block: 1px solid #edf0eb; padding: 24px; cursor: zoom-in; min-height: 200px; }
+      .preview:hover { background: #fcfdfb; }
+      .preview img { display: block; width: 100%; height: auto; max-height: 640px; object-fit: contain; }
+      .card:first-child .preview img { max-height: 760px; }
+      figcaption { padding: 15px 30px 0; color: var(--muted); font-size: 13px; }
+      .card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; padding: 20px 30px 26px; }
+      .card-actions a { font-size: 13px; }
+      .card-actions .view { padding: 9px 14px; border: 1px solid #cbdacd; border-radius: 7px; background: #f0f5ec; font-weight: 600; text-decoration: none; }
+      .card-actions .view:hover { background: #e4eddf; }
+      .card-actions .source { margin-left: auto; color: var(--muted); }
+      footer { padding: 36px 0 46px; color: var(--muted); font-size: 13px; }
+      footer p { margin: 6px 0; }
+      @media (max-width: 640px) {
+        .page { padding-inline: 16px; }
+        .intro { padding-top: 36px; }
+        .lead { font-size: 16px; }
+        .card-head { padding: 22px 18px 18px; gap: 12px; }
+        .number { flex-basis: 32px; height: 32px; }
+        .preview { padding: 12px; min-height: 150px; }
+        figcaption { padding: 14px 18px 0; }
+        .card-actions { padding: 18px; gap: 14px; }
+        .card-actions .source { flex-basis: 100%; margin-left: 0; }
+      }
+      @media print {
+        :root { background: white; color: black; }
+        .page { max-width: none; padding: 0; }
+        .topbar, nav, .reading-note, .card-actions, footer, .skip { display: none; }
+        .intro { padding: 0 0 20px; }
+        h1 { font-size: 28px; }
+        .lead { font-size: 12px; }
+        main { display: block; }
+        .card { break-before: page; border: 0; box-shadow: none; border-radius: 0; }
+        .card-head { padding-inline: 0; }
+        .preview { padding: 0; border: 0; }
+        .preview img, .card:first-child .preview img { max-height: 210mm; }
+        figcaption { padding-inline: 0; }
+        .description { font-size: 12px; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#diagrams">Перейти к схемам</a>
+    <div class="page">
+      <header>
+        <div class="topbar">
+          <a class="brand" href="README.md" aria-label="YaGo — документы второй недели">YaGo<span aria-hidden="true">.</span></a>
+          <a href="README.md">Все материалы недели 2 ↗</a>
+        </div>
+        <div class="intro">
+          <p class="eyebrow">Неделя 02 · Проектирование</p>
+          <h1>Устройство проекта<br>в шести схемах</h1>
+          <p class="lead">Данные, компоненты и сценарий аренды YaGo. Готовые рисунки для просмотра, обсуждения с командой и оформления диплома.</p>
+        </div>
+        <nav aria-label="Выбрать схему">
+          <a href="#er-model">01 · ER-модель</a>
+          <a href="#architecture-current">02 · Текущая архитектура</a>
+          <a href="#architecture-target">03 · Целевая архитектура</a>
+          <a href="#rental-sequence">04 · Запуск аренды</a>
+          <a href="#vehicle-states">05 · Статусы техники</a>
+          <a href="#rental-states">06 · Статусы аренды</a>
+        </nav>
+        <div class="reading-note">
+          <p><strong>Для крупного просмотра нажмите на рисунок.</strong> SVG откроется отдельно; его можно увеличивать без потери качества. PNG можно скачать и вставить в Word или презентацию.</p>
+          <p>Текущая архитектура описывает существующий прототип. Остальные схемы фиксируют проектные решения недели 2; их реализация предусмотрена следующими этапами.</p>
+        </div>
+      </header>
+
+      <main id="diagrams">
+        <article class="card" id="er-model" aria-labelledby="er-title">
+          <div class="card-head">
+            <span class="number" aria-hidden="true">01</span>
+            <div class="card-copy">
+              <div class="card-title"><h2 id="er-title">ER-модель данных</h2><span class="badge">Проектируется</span></div>
+              <p class="description">13 сущностей и связи между ними: пользователи, роли, заказы, исполнители, техника, аренда, тарифы, геозоны и доставка еды.</p>
+            </div>
+          </div>
+          <figure>
+            <a class="preview" href="p5/ru/diagrams/er-model.svg" target="_blank" rel="noopener" aria-label="Открыть ER-модель в полном размере, в новой вкладке"><img src="p5/ru/diagrams/er-model.svg" alt="Концептуальная ER-модель YaGo: связи 13 сущностей, включая пользователей, заказы, технику и аренду."></a>
+            <figcaption>Рисунок 1. Первая концептуальная ER-модель. Связи показывают кардинальности; обязательность по виду услуги и ограничения описаны в документе П5. Таблицы пока не созданы.</figcaption>
+          </figure>
+          <div class="card-actions">
+            <a class="view" href="p5/ru/diagrams/er-model.svg" target="_blank" rel="noopener">Рассмотреть схему ↗</a>
+            <a href="p5/ru/diagrams/er-model.svg" download>Скачать SVG</a>
+            <a href="p5/ru/diagrams/er-model.png" download>PNG для диплома ↓</a>
+            <a class="source" href="p5/ru/05-er-model.md">Описание и ограничения · П5</a>
+          </div>
+        </article>
+
+        <article class="card" id="architecture-current" aria-labelledby="current-title">
+          <div class="card-head">
+            <span class="number" aria-hidden="true">02</span>
+            <div class="card-copy">
+              <div class="card-title"><h2 id="current-title">Текущая архитектура</h2><span class="badge badge-current">Существующий прототип</span></div>
+              <p class="description">React через Vite обращается к Express и Socket.IO. Бизнес-данные живут в памяти сервера; карта использует Leaflet и OpenStreetMap.</p>
+            </div>
+          </div>
+          <figure>
+            <a class="preview" href="p2/ru/diagrams/architecture-current.svg" target="_blank" rel="noopener" aria-label="Открыть текущую архитектуру в полном размере, в новой вкладке"><img src="p2/ru/diagrams/architecture-current.svg" alt="Текущая архитектура: пользователь, React, Vite, Express и Socket.IO, массивы в памяти, проверка PostgreSQL и внешние ресурсы карты." loading="lazy"></a>
+            <figcaption>Рисунок 2. Устройство прототипа в режиме разработки. PostgreSQL используется только для проверки соединения через SELECT 1, если доступ настроен.</figcaption>
+          </figure>
+          <div class="card-actions">
+            <a class="view" href="p2/ru/diagrams/architecture-current.svg" target="_blank" rel="noopener">Рассмотреть схему ↗</a>
+            <a href="p2/ru/diagrams/architecture-current.svg" download>Скачать SVG</a>
+            <a href="p2/ru/diagrams/architecture-current.png" download>PNG для диплома ↓</a>
+            <a class="source" href="p2/ru/02-system-architecture.md">Архитектура · П2</a>
+          </div>
+        </article>
+
+        <article class="card" id="architecture-target" aria-labelledby="target-title">
+          <div class="card-head">
+            <span class="number" aria-hidden="true">03</span>
+            <div class="card-copy">
+              <div class="card-title"><h2 id="target-title">Целевая архитектура</h2><span class="badge">Проектируется</span></div>
+              <p class="description">Модульный монолит NestJS с общей PostgreSQL/PostGIS, клиентскими экранами React, картой 2ГИС и эмулятором замка. У модулей обозначены владельцы в команде.</p>
+            </div>
+          </div>
+          <figure>
+            <a class="preview" href="p2/ru/diagrams/architecture-target.svg" target="_blank" rel="noopener" aria-label="Открыть целевую архитектуру в полном размере, в новой вкладке"><img src="p2/ru/diagrams/architecture-target.svg" alt="Целевая архитектура YaGo: React и Nginx, модули NestJS, PostgreSQL с PostGIS, 2ГИС, Socket.IO и эмулятор техники." loading="lazy"></a>
+            <figcaption>Рисунок 3. Компоненты будущей системы и их взаимодействие. Модули NestJS работают в одном backend; стрелки между ними обозначают вызовы сервисов.</figcaption>
+          </figure>
+          <div class="card-actions">
+            <a class="view" href="p2/ru/diagrams/architecture-target.svg" target="_blank" rel="noopener">Рассмотреть схему ↗</a>
+            <a href="p2/ru/diagrams/architecture-target.svg" download>Скачать SVG</a>
+            <a href="p2/ru/diagrams/architecture-target.png" download>PNG для диплома ↓</a>
+            <a class="source" href="p2/ru/02-system-architecture.md">Архитектура · П2</a>
+          </div>
+        </article>
+
+        <article class="card" id="rental-sequence" aria-labelledby="sequence-title">
+          <div class="card-head">
+            <span class="number" aria-hidden="true">04</span>
+            <div class="card-copy">
+              <div class="card-title"><h2 id="sequence-title">Бронирование и запуск аренды</h2><span class="badge">Проектируется</span></div>
+              <p class="description">Путь запроса от клиента до базы данных и эмулятора: проверка доступа, создание брони, QR-старт, подтверждение открытия и уведомление пользователя.</p>
+            </div>
+          </div>
+          <figure>
+            <a class="preview" href="p2/ru/diagrams/rental-sequence.svg" target="_blank" rel="noopener" aria-label="Открыть последовательность запуска аренды в полном размере, в новой вкладке"><img src="p2/ru/diagrams/rental-sequence.svg" alt="Диаграмма последовательности бронирования и QR-старта аренды с успешным открытием замка и веткой ошибки или тайм-аута." loading="lazy"></a>
+            <figcaption>Рисунок 4. Последовательность взаимодействий при старте аренды. Ожидание замка происходит вне транзакции БД; неизвестный результат команды требует сверки.</figcaption>
+          </figure>
+          <div class="card-actions">
+            <a class="view" href="p2/ru/diagrams/rental-sequence.svg" target="_blank" rel="noopener">Рассмотреть схему ↗</a>
+            <a href="p2/ru/diagrams/rental-sequence.svg" download>Скачать SVG</a>
+            <a href="p2/ru/diagrams/rental-sequence.png" download>PNG для диплома ↓</a>
+            <a class="source" href="p2/ru/02-system-architecture.md">Потоки данных · П2</a>
+          </div>
+        </article>
+
+        <article class="card" id="vehicle-states" aria-labelledby="vehicle-title">
+          <div class="card-head">
+            <span class="number" aria-hidden="true">05</span>
+            <div class="card-copy">
+              <div class="card-title"><h2 id="vehicle-title">Состояния техники</h2><span class="badge">Проектируется</span></div>
+              <p class="description">Допустимые переходы между доступностью, бронью, поездкой, обслуживанием, зарядкой и отсутствием связи. Для велосипеда состояние зарядки не применяется.</p>
+            </div>
+          </div>
+          <figure>
+            <a class="preview" href="p4/ru/diagrams/vehicle-states.svg" target="_blank" rel="noopener" aria-label="Открыть состояния техники в полном размере, в новой вкладке"><img src="p4/ru/diagrams/vehicle-states.svg" alt="Диаграмма состояний техники: available, reserved, in_use, maintenance, charging и offline с условиями переходов." loading="lazy"></a>
+            <figcaption>Рисунок 5. Автомат состояний самоката и велосипеда. При открытой аренде потеря связи фиксируется как инцидент и не освобождает технику.</figcaption>
+          </figure>
+          <div class="card-actions">
+            <a class="view" href="p4/ru/diagrams/vehicle-states.svg" target="_blank" rel="noopener">Рассмотреть схему ↗</a>
+            <a href="p4/ru/diagrams/vehicle-states.svg" download>Скачать SVG</a>
+            <a href="p4/ru/diagrams/vehicle-states.png" download>PNG для диплома ↓</a>
+            <a class="source" href="p4/ru/04-scooter-specification.md">Условия переходов · П4</a>
+          </div>
+        </article>
+
+        <article class="card" id="rental-states" aria-labelledby="rental-title">
+          <div class="card-head">
+            <span class="number" aria-hidden="true">06</span>
+            <div class="card-copy">
+              <div class="card-title"><h2 id="rental-title">Жизненный цикл аренды</h2><span class="badge">Проектируется</span></div>
+              <p class="description">От бесплатной брони к разблокировке, активной поездке и подтвержденному завершению. Отдельные ветки показывают отмену, истечение брони и отказ до старта.</p>
+            </div>
+          </div>
+          <figure>
+            <a class="preview" href="p4/ru/diagrams/rental-states.svg" target="_blank" rel="noopener" aria-label="Открыть жизненный цикл аренды в полном размере, в новой вкладке"><img src="p4/ru/diagrams/rental-states.svg" alt="Диаграмма состояний аренды: reserved, unlocking, active, finishing, completed; терминальные ветки cancelled, expired и failed." loading="lazy"></a>
+            <figcaption>Рисунок 6. Автомат состояний аренды. Тайм-аут не доказывает отказ: при неизвестном результате аренда остается в unlocking или finishing до проверки.</figcaption>
+          </figure>
+          <div class="card-actions">
+            <a class="view" href="p4/ru/diagrams/rental-states.svg" target="_blank" rel="noopener">Рассмотреть схему ↗</a>
+            <a href="p4/ru/diagrams/rental-states.svg" download>Скачать SVG</a>
+            <a href="p4/ru/diagrams/rental-states.png" download>PNG для диплома ↓</a>
+            <a class="source" href="p4/ru/04-scooter-specification.md">Жизненный цикл · П4</a>
+          </div>
+        </article>
+      </main>
+
+      <footer>
+        <p><strong>YaGo · Материалы второй недели</strong> · Версия проектных решений от 24 сентября 2026 г.</p>
+        <p>Страница и рисунки открываются локально без установки программ и подключения к сети. Пояснения и редактируемые исходники Mermaid находятся в <a href="README.md">документах недели 2</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

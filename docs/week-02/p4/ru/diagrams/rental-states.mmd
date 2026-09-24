@@ -1,0 +1,15 @@
+%% Generated from 04-scooter-specification.md; edit the Mermaid block there.
+stateDiagram-v2
+    [*] --> reserved: Бронь
+    reserved --> cancelled: Отмена владельцем
+    reserved --> expired: Срок истек
+    reserved --> failed: Проверки старта не пройдены
+    reserved --> unlocking: QR принят
+    unlocking --> active: Открытие подтверждено
+    unlocking --> failed: Подтвержден отказ и закрытый замок
+    active --> finishing: Парковка допустима или инцидент оператора
+    finishing --> completed: Закрытие подтверждено
+    cancelled --> [*]
+    expired --> [*]
+    failed --> [*]
+    completed --> [*]

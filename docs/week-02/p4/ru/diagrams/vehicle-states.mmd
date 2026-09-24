@@ -1,0 +1,24 @@
+%% Generated from 04-scooter-specification.md; edit the Mermaid block there.
+stateDiagram-v2
+    [*] --> maintenance
+    maintenance --> available: Проверка готовности
+    maintenance --> charging: Требуется зарядка
+    available --> reserved: Бронь
+    reserved --> in_use: Разблокировка подтверждена
+    reserved --> available: Отмена или истечение, готова
+    reserved --> maintenance: Отказ, нужен осмотр
+    reserved --> charging: Освобождена, низкий заряд
+    reserved --> offline: Освобождена, нет связи
+    in_use --> available: Завершена, готова
+    in_use --> charging: Завершена, низкий заряд
+    in_use --> maintenance: Завершена, нужен осмотр
+    in_use --> offline: Завершена, нет свежей телеметрии
+    available --> charging: Низкий заряд
+    available --> maintenance: Неисправность
+    available --> offline: Нет свежей телеметрии
+    charging --> available: Заряжена, готова
+    charging --> maintenance: Неисправность
+    charging --> offline: Нет связи
+    offline --> available: Связь восстановлена, готова
+    offline --> charging: Связь восстановлена, низкий заряд
+    offline --> maintenance: Связь восстановлена, нужен осмотр

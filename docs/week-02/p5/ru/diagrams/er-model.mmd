@@ -1,0 +1,23 @@
+%% Generated from 05-er-model.md; edit the Mermaid block there.
+erDiagram
+    users ||--o{ user_roles : has
+    roles ||--o{ user_roles : grants
+    users ||--o{ sessions : opens
+    users ||--o| performers : has_profile
+    users ||--o{ orders : places
+    users |o--o{ restaurants : responsible_for
+
+    performers |o--o{ orders : fulfills
+    vehicles |o--o{ orders : assigned_transport
+    tariffs ||--o{ orders : priced_by
+    zones |o--o{ tariffs : service_scope
+    zones |o--o{ orders : service_area
+
+    restaurants ||--o{ menu_items : offers
+    restaurants |o--o{ orders : food_source
+    orders ||--o{ order_items : contains
+    menu_items ||--o{ order_items : selected_as
+
+    orders ||--o| rentals : has_rental
+    vehicles ||--o{ rentals : rented_in
+    zones |o--o{ rentals : finish_parking

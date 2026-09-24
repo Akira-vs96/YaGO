@@ -1,0 +1,21 @@
+{
+  "name": "yago-superapp",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "server",
+    "src"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace server\" \"npm run dev --workspace src\"",
+    "build": "npm run build --workspace server && npm run build --workspace src",
+    "start": "npm run start --workspace server",
+    "lint": "npm run lint --workspace src",
+    "docs:diagrams": "node scripts/render-diagrams.mjs"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "11.17.0",
+    "concurrently": "^9.0.1",
+    "puppeteer": "24.43.1"
+  }
+}
