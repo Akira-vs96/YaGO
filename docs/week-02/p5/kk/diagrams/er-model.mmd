@@ -1,0 +1,23 @@
+%% Generated from p5/kk/diagrams/er-model.mmd; edit the Mermaid block there.
+erDiagram
+    users ||--o{ user_roles : тағайындалады
+    roles ||--o{ user_roles : береді
+    users ||--o{ sessions : ашады
+    users ||--o| performers : профилі_бар
+    users ||--o{ orders : жасайды
+    users |o--o{ restaurants : жауапты
+
+    performers |o--o{ orders : орындайды
+    vehicles |o--o{ orders : тағайындалған_көлік
+    tariffs ||--o{ orders : тарифпен_есептеледі
+    zones |o--o{ tariffs : қызмет_аймағы
+    zones |o--o{ orders : қызмет_аумағы
+
+    restaurants ||--o{ menu_items : ұсынады
+    restaurants |o--o{ orders : тағам_көзі
+    orders ||--o{ order_items : қамтиды
+    menu_items ||--o{ order_items : таңдалды
+
+    orders ||--o| rentals : арендасы_бар
+    vehicles ||--o{ rentals : жалға_алынды
+    zones |o--o{ rentals : тұрақта_аяқтау

@@ -1,0 +1,15 @@
+%% Generated from p4/kk/diagrams/rental-states.mmd; edit the Mermaid block there.
+stateDiagram-v2
+    [*] --> reserved: Бронь
+    reserved --> cancelled: Иесі бас тартты
+    reserved --> expired: Мерзімі аяқталды
+    reserved --> failed: Бастау тексерулері өтпеді
+    reserved --> unlocking: QR қабылданды
+    unlocking --> active: Ашу расталды
+    unlocking --> failed: Бас тарту және жабық құлып расталды
+    active --> finishing: Тұраққа қоюға болады немесе оператор инциденті
+    finishing --> completed: Жабу расталды
+    cancelled --> [*]
+    expired --> [*]
+    failed --> [*]
+    completed --> [*]

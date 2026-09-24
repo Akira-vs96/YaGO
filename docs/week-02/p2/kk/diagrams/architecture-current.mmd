@@ -1,0 +1,10 @@
+%% Generated from p2/kk/diagrams/architecture-current.mmd; edit the Mermaid block there.
+flowchart LR
+    User["Демо пайдаланушы"] --> UI["React: src/App.jsx"]
+    UI -->|"HTTP /api; Socket.IO /socket.io"| Vite["Vite :5173 / dev proxy"]
+    Vite --> API["Express + Socket.IO :4000 / server/src/index.js"]
+    API --> Memory["Жадтағы массивтер: restaurants, menu, couriers, orders"]
+    API -->|"/api/health ішінде тек SELECT 1"| PG["PostgreSQL / Supabase, қолжетімділік бапталса"]
+    UI --> Tiles["OpenStreetMap тайлдары"]
+    UI --> CDN["Leaflet және Google Fonts CDN"]
+    Drafts["config.js, mockData.js, orderService.js"] -.->|"дайындама: entry point импорттамайды"| API

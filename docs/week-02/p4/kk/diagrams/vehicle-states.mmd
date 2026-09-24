@@ -1,0 +1,24 @@
+%% Generated from p4/kk/diagrams/vehicle-states.mmd; edit the Mermaid block there.
+stateDiagram-v2
+    [*] --> maintenance
+    maintenance --> available: Дайындық тексерілді
+    maintenance --> charging: Зарядтау қажет
+    available --> reserved: Бронь
+    reserved --> in_use: Құлпын ашу расталды
+    reserved --> available: Бас тарту немесе мерзімі аяқталды, дайын
+    reserved --> maintenance: Ақау, тексеру қажет
+    reserved --> charging: Босатылды, заряд төмен
+    reserved --> offline: Босатылды, байланыс жоқ
+    in_use --> available: Аяқталды, дайын
+    in_use --> charging: Аяқталды, заряд төмен
+    in_use --> maintenance: Аяқталды, тексеру қажет
+    in_use --> offline: Аяқталды, жаңа телеметрия жоқ
+    available --> charging: Заряд төмен
+    available --> maintenance: Ақау
+    available --> offline: Жаңа телеметрия жоқ
+    charging --> available: Зарядталды, дайын
+    charging --> maintenance: Ақау
+    charging --> offline: Байланыс жоқ
+    offline --> available: Байланыс қалпына келді, дайын
+    offline --> charging: Байланыс қалпына келді, заряд төмен
+    offline --> maintenance: Байланыс қалпына келді, тексеру қажет

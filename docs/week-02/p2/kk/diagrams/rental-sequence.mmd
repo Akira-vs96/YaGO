@@ -1,0 +1,28 @@
+%% Generated from p2/kk/diagrams/rental-sequence.mmd; edit the Mermaid block there.
+sequenceDiagram
+    actor C as Клиент
+    participant API as Auth + Scooter API
+    participant O as Orders + Rentals
+    participant DB as PostgreSQL
+    participant E as Эмулятор
+    participant G as Socket.IO Gateway
+    C->>API: vehicle_id + идемпотенттілік кілтімен брондау
+    API->>API: Пайдаланушыны, құқықтарды, деректерді тексеру
+    API->>O: Бронь жасау
+    O->>DB: Транзакция: техника қолжетімділігі, orders + rentals
+    DB-->>O: Commit немесе қақтығыс
+    O-->>C: Расталған бронь немесе қате
+    C->>API: Өз бронінің QR коды + бастау командасы
+    API->>O: Иесін, мерзімін және күйін тексеру
+    O->>DB: unlocking және command_id сақтау
+    O->>E: unlock(command_id, vehicle_id)
+    alt unlock сәтті расталды
+        E-->>O: Команда орындалды
+        O->>DB: Транзакция: active, in_use, басталу уақыты
+        DB-->>O: Commit
+        O->>G: Тапсырыс пен аренда өзгерді
+        G-->>C: Ағымдағы күй
+    else Тайм-аут немесе қате
+        O->>DB: Тексеру нәтижесін немесе инцидентті сақтау
+        O-->>C: Команда күйі, қайта оқу
+    end
