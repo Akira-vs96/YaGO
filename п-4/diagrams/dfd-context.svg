@@ -1,0 +1,57 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='1050' viewBox='0 0 1600 1050' role='img'><title>YaGo — контекстная DFD модуля аренды</title><rect width='1600' height='1050' fill='white'/>
+<text x='65' y='70' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='start' fill='#087F8C'>YaGo / П4 / НЕДЕЛЯ 3</text>
+<text x='65' y='122' font-family='Arial, sans-serif' font-size='38' font-weight='bold' text-anchor='start' fill='#23364D'>Аренда самокатов и велосипедов</text>
+<text x='65' y='165' font-family='Arial, sans-serif' font-size='23' font-weight='normal' text-anchor='start' fill='#52647A'>Контекстная DFD · процесс 0.0 · проектная модель</text>
+<rect x='1080' y='240' width='455' height='640' rx='24' fill='#EAF7F6' stroke='#087F8C' stroke-width='2'/>
+<text x='1307' y='463' font-family='Arial, sans-serif' font-size='26' font-weight='bold' text-anchor='middle' fill='#087F8C'>0.0</text>
+<text x='1307' y='517' font-family='Arial, sans-serif' font-size='30' font-weight='bold' text-anchor='middle' fill='#23364D'>Управлять арендой</text>
+<text x='1307' y='562' font-family='Arial, sans-serif' font-size='23' font-weight='normal' text-anchor='middle' fill='#23364D'>Серверный модуль YaGo</text>
+<text x='1307' y='612' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Проверки, бронь, команды замку,</text>
+<text x='1307' y='644' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>состояния и расчёт стоимости</text>
+<rect x='65' y='240' width='320' height='130' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='225' y='300' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E1</text>
+<text x='225' y='324' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>Клиентское приложение</text>
+<line x1='385' y1='280' x2='1080' y2='280' stroke='#087F8C' stroke-width='2'/>
+<line x1='1080' y1='280' x2='1070' y2='275' stroke='#087F8C' stroke-width='2'/>
+<line x1='1080' y1='280' x2='1070' y2='285' stroke='#087F8C' stroke-width='2'/>
+<text x='732.5' y='271' font-family='Arial, sans-serif' font-size='21' font-weight='normal' text-anchor='middle' fill='#23364D'>Поиск, бронь, QR, запрос завершения</text>
+<line x1='1080' y1='343' x2='385' y2='343' stroke='#087F8C' stroke-width='2'/>
+<line x1='385' y1='343' x2='395' y2='338' stroke='#087F8C' stroke-width='2'/>
+<line x1='385' y1='343' x2='395' y2='348' stroke='#087F8C' stroke-width='2'/>
+<text x='732.5' y='334' font-family='Arial, sans-serif' font-size='21' font-weight='normal' text-anchor='middle' fill='#23364D'>Техника, тариф, результат, сумма</text>
+<rect x='65' y='410' width='320' height='130' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='225' y='470' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E2</text>
+<text x='225' y='494' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>Эмулятор техники</text>
+<line x1='385' y1='450' x2='1080' y2='450' stroke='#087F8C' stroke-width='2'/>
+<line x1='1080' y1='450' x2='1070' y2='445' stroke='#087F8C' stroke-width='2'/>
+<line x1='1080' y1='450' x2='1070' y2='455' stroke='#087F8C' stroke-width='2'/>
+<text x='732.5' y='441' font-family='Arial, sans-serif' font-size='21' font-weight='normal' text-anchor='middle' fill='#23364D'>Телеметрия, ответы замка</text>
+<line x1='1080' y1='513' x2='385' y2='513' stroke='#087F8C' stroke-width='2'/>
+<line x1='385' y1='513' x2='395' y2='508' stroke='#087F8C' stroke-width='2'/>
+<line x1='385' y1='513' x2='395' y2='518' stroke='#087F8C' stroke-width='2'/>
+<text x='732.5' y='504' font-family='Arial, sans-serif' font-size='21' font-weight='normal' text-anchor='middle' fill='#23364D'>Команды открыть / закрыть замок</text>
+<rect x='65' y='580' width='320' height='130' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='225' y='640' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E3</text>
+<text x='225' y='664' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>Оператор парка</text>
+<line x1='385' y1='620' x2='1080' y2='620' stroke='#087F8C' stroke-width='2'/>
+<line x1='1080' y1='620' x2='1070' y2='615' stroke='#087F8C' stroke-width='2'/>
+<line x1='1080' y1='620' x2='1070' y2='625' stroke='#087F8C' stroke-width='2'/>
+<text x='732.5' y='611' font-family='Arial, sans-serif' font-size='21' font-weight='normal' text-anchor='middle' fill='#23364D'>Действие обслуживания, причина</text>
+<line x1='1080' y1='683' x2='385' y2='683' stroke='#087F8C' stroke-width='2'/>
+<line x1='385' y1='683' x2='395' y2='678' stroke='#087F8C' stroke-width='2'/>
+<line x1='385' y1='683' x2='395' y2='688' stroke='#087F8C' stroke-width='2'/>
+<text x='732.5' y='674' font-family='Arial, sans-serif' font-size='21' font-weight='normal' text-anchor='middle' fill='#23364D'>Состояние техники, результат операции</text>
+<rect x='65' y='750' width='320' height='130' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='225' y='810' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E4</text>
+<text x='225' y='834' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>Общий контур YaGo</text>
+<line x1='385' y1='790' x2='1080' y2='790' stroke='#087F8C' stroke-width='2'/>
+<line x1='1080' y1='790' x2='1070' y2='785' stroke='#087F8C' stroke-width='2'/>
+<line x1='1080' y1='790' x2='1070' y2='795' stroke='#087F8C' stroke-width='2'/>
+<text x='732.5' y='781' font-family='Arial, sans-serif' font-size='21' font-weight='normal' text-anchor='middle' fill='#23364D'>Проверенная личность и роль</text>
+<line x1='1080' y1='853' x2='385' y2='853' stroke='#087F8C' stroke-width='2'/>
+<line x1='385' y1='853' x2='395' y2='848' stroke='#087F8C' stroke-width='2'/>
+<line x1='385' y1='853' x2='395' y2='858' stroke='#087F8C' stroke-width='2'/>
+<text x='732.5' y='844' font-family='Arial, sans-serif' font-size='21' font-weight='normal' text-anchor='middle' fill='#23364D'>Заказ аренды, статус и сумма</text>
+<text x='65' y='941' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='start' fill='#52647A'>Стрелки обозначают передаваемые данные. Авторизация — в общем контуре; техника — эмулятор.</text>
+<text x='65' y='980' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='start' fill='#52647A'>Состав процесса 0.0 раскрыт на DFD уровня 1. Хранилища данных на контекстной схеме не показываются.</text>
+</svg>

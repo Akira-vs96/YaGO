@@ -1,0 +1,338 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='2610' viewBox='0 0 1600 2610' role='img'><title>YaGo — DFD уровня 1: пять процессов аренды</title><rect width='1600' height='2610' fill='white'/>
+<text x='45' y='60' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='start' fill='#087F8C'>YaGo / П4 / НЕДЕЛЯ 3</text>
+<text x='45' y='107' font-family='Arial, sans-serif' font-size='36' font-weight='bold' text-anchor='start' fill='#23364D'>Потоки данных модуля аренды</text>
+<text x='45' y='149' font-family='Arial, sans-serif' font-size='21' font-weight='normal' text-anchor='start' fill='#52647A'>DFD уровня 1 · декомпозиция процесса 0.0 · нотация Гейна—Сарсона</text>
+<text x='45' y='184' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='start' fill='#52647A'>E и D с одинаковым номером — повтор одного объекта. Полосы показывают процессы, а не шаги по времени.</text>
+<line x1='45' y1='230' x2='1550' y2='230' stroke='#D4DFE8' stroke-width='2'/>
+<text x='45' y='263' font-family='Arial, sans-serif' font-size='24' font-weight='bold' text-anchor='start' fill='#23364D'>1.0  Найти доступную технику</text>
+<rect x='630' y='290' width='335' height='350' rx='20' fill='#EAF7F6' stroke='#087F8C' stroke-width='2'/>
+<text x='797' y='355' font-family='Arial, sans-serif' font-size='25' font-weight='bold' text-anchor='middle' fill='#087F8C'>1.0</text>
+<text x='797' y='435' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>Отобрать технику</text>
+<text x='797' y='466' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>по области поиска</text>
+<text x='797' y='497' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>и условиям доступности</text>
+<rect x='45' y='382' width='255' height='68' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='172.5' y='423' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E1 · Клиент</text>
+<line x1='300' y1='406' x2='630' y2='406' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='406' x2='620' y2='401' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='406' x2='620' y2='411' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='397' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Область поиска, фильтры</text>
+<line x1='630' y1='443' x2='300' y2='443' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='443' x2='310' y2='438' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='443' x2='310' y2='448' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='434' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Техника, зоны, тарифы</text>
+<line x1='1260' y1='295' x2='1545' y2='295' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='357' x2='1545' y2='357' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='295' x2='1260' y2='357' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='295' x2='1307' y2='357' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='333' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D2</text>
+<text x='1425' y='333' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Техника</text>
+<line x1='1260' y1='319' x2='965' y2='319' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='319' x2='975' y2='314' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='319' x2='975' y2='324' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='310' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Координаты и состояние</text>
+<line x1='1260' y1='469' x2='1545' y2='469' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='531' x2='1545' y2='531' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='469' x2='1260' y2='531' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='469' x2='1307' y2='531' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='507' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D3</text>
+<text x='1425' y='507' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Тарифы и зоны</text>
+<line x1='1260' y1='493' x2='965' y2='493' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='493' x2='975' y2='488' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='493' x2='975' y2='498' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='484' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Тарифы, полигоны зон</text>
+<line x1='45' y1='685' x2='1550' y2='685' stroke='#D4DFE8' stroke-width='2'/>
+<text x='45' y='718' font-family='Arial, sans-serif' font-size='24' font-weight='bold' text-anchor='start' fill='#23364D'>2.0  Создать бронь</text>
+<rect x='630' y='745' width='335' height='350' rx='20' fill='#EAF7F6' stroke='#087F8C' stroke-width='2'/>
+<text x='797' y='810' font-family='Arial, sans-serif' font-size='25' font-weight='bold' text-anchor='middle' fill='#087F8C'>2.0</text>
+<text x='797' y='890' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>Проверить условия</text>
+<text x='797' y='921' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>и атомарно закрепить</text>
+<text x='797' y='952' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>технику за клиентом</text>
+<rect x='45' y='750' width='255' height='68' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='172.5' y='791' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E1 · Клиент</text>
+<line x1='300' y1='774' x2='630' y2='774' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='774' x2='620' y2='769' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='774' x2='620' y2='779' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='765' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Техника, выбранный тариф</text>
+<line x1='630' y1='811' x2='300' y2='811' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='811' x2='310' y2='806' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='811' x2='310' y2='816' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='802' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Бронь и срок / отказ</text>
+<rect x='45' y='924' width='255' height='68' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='172.5' y='965' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E4 · Общий контур</text>
+<line x1='300' y1='948' x2='630' y2='948' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='948' x2='620' y2='943' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='948' x2='620' y2='953' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='939' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Личность и роль</text>
+<line x1='630' y1='985' x2='300' y2='985' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='985' x2='310' y2='980' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='985' x2='310' y2='990' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='976' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Заказ аренды, статус</text>
+<line x1='1260' y1='750' x2='1545' y2='750' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='812' x2='1545' y2='812' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='750' x2='1260' y2='812' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='750' x2='1307' y2='812' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='788' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D2</text>
+<text x='1425' y='788' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Техника</text>
+<line x1='1260' y1='774' x2='965' y2='774' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='774' x2='975' y2='769' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='774' x2='975' y2='779' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='765' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Состояние и телеметрия</text>
+<line x1='965' y1='809' x2='1260' y2='809' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='809' x2='1250' y2='804' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='809' x2='1250' y2='814' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='800' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Статус reserved</text>
+<line x1='1260' y1='837' x2='1545' y2='837' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='899' x2='1545' y2='899' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='837' x2='1260' y2='899' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='837' x2='1307' y2='899' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='875' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D3</text>
+<text x='1425' y='875' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Тарифы и зоны</text>
+<line x1='1260' y1='861' x2='965' y2='861' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='861' x2='975' y2='856' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='861' x2='975' y2='866' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='852' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Активный тариф, зоны</text>
+<line x1='1260' y1='924' x2='1545' y2='924' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='986' x2='1545' y2='986' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='924' x2='1260' y2='986' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='924' x2='1307' y2='986' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='962' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D4</text>
+<text x='1425' y='962' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Заказы и аренды</text>
+<line x1='1260' y1='948' x2='965' y2='948' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='948' x2='975' y2='943' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='948' x2='975' y2='953' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='939' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Незавершённые аренды</text>
+<line x1='965' y1='983' x2='1260' y2='983' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='983' x2='1250' y2='978' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='983' x2='1250' y2='988' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='974' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Бронь, заказ, снимок тарифа</text>
+<line x1='1260' y1='1011' x2='1545' y2='1011' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1073' x2='1545' y2='1073' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1011' x2='1260' y2='1073' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='1011' x2='1307' y2='1073' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='1049' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D5</text>
+<text x='1425' y='1049' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Журнал операций</text>
+<line x1='965' y1='1070' x2='1260' y2='1070' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1070' x2='1250' y2='1065' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1070' x2='1250' y2='1075' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1061' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Результат проверки</text>
+<line x1='45' y1='1140' x2='1550' y2='1140' stroke='#D4DFE8' stroke-width='2'/>
+<text x='45' y='1173' font-family='Arial, sans-serif' font-size='24' font-weight='bold' text-anchor='start' fill='#23364D'>3.0  Начать аренду по QR</text>
+<rect x='630' y='1200' width='335' height='350' rx='20' fill='#EAF7F6' stroke='#087F8C' stroke-width='2'/>
+<text x='797' y='1265' font-family='Arial, sans-serif' font-size='25' font-weight='bold' text-anchor='middle' fill='#087F8C'>3.0</text>
+<text x='797' y='1345' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>Проверить бронь,</text>
+<text x='797' y='1376' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>отправить команду,</text>
+<text x='797' y='1407' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>обработать ответ замка</text>
+<rect x='45' y='1205' width='255' height='68' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='172.5' y='1246' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E1 · Клиент</text>
+<line x1='300' y1='1229' x2='630' y2='1229' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1229' x2='620' y2='1224' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1229' x2='620' y2='1234' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1220' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>QR-токен, номер брони</text>
+<line x1='630' y1='1266' x2='300' y2='1266' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1266' x2='310' y2='1261' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1266' x2='310' y2='1271' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1257' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Результат запуска</text>
+<rect x='45' y='1292' width='255' height='68' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='172.5' y='1333' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E4 · Общий контур</text>
+<line x1='300' y1='1316' x2='630' y2='1316' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1316' x2='620' y2='1311' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1316' x2='620' y2='1321' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1307' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Личность и роль</text>
+<line x1='630' y1='1353' x2='300' y2='1353' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1353' x2='310' y2='1348' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1353' x2='310' y2='1358' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1344' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Статус заказа</text>
+<rect x='45' y='1466' width='255' height='68' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='172.5' y='1507' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E2 · Эмулятор</text>
+<line x1='300' y1='1490' x2='630' y2='1490' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1490' x2='620' y2='1485' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1490' x2='620' y2='1495' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1481' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Ответ замка, ID команды</text>
+<line x1='630' y1='1527' x2='300' y2='1527' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1527' x2='310' y2='1522' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1527' x2='310' y2='1532' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1518' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Команда открытия, ID</text>
+<line x1='1260' y1='1205' x2='1545' y2='1205' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1267' x2='1545' y2='1267' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1205' x2='1260' y2='1267' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='1205' x2='1307' y2='1267' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='1243' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D2</text>
+<text x='1425' y='1243' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Техника</text>
+<line x1='1260' y1='1229' x2='965' y2='1229' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='1229' x2='975' y2='1224' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='1229' x2='975' y2='1234' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1220' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>QR, состояние, телеметрия</text>
+<line x1='965' y1='1264' x2='1260' y2='1264' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1264' x2='1250' y2='1259' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1264' x2='1250' y2='1269' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1255' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Статус и состояние замка</text>
+<line x1='1260' y1='1292' x2='1545' y2='1292' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1354' x2='1545' y2='1354' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1292' x2='1260' y2='1354' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='1292' x2='1307' y2='1354' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='1330' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D4</text>
+<text x='1425' y='1330' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Заказы и аренды</text>
+<line x1='1260' y1='1316' x2='965' y2='1316' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='1316' x2='975' y2='1311' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='1316' x2='975' y2='1321' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1307' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Владелец, срок, статус</text>
+<line x1='965' y1='1351' x2='1260' y2='1351' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1351' x2='1250' y2='1346' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1351' x2='1250' y2='1356' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1342' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Статус и время старта</text>
+<line x1='1260' y1='1466' x2='1545' y2='1466' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1528' x2='1545' y2='1528' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1466' x2='1260' y2='1528' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='1466' x2='1307' y2='1528' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='1504' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D5</text>
+<text x='1425' y='1504' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Журнал операций</text>
+<line x1='965' y1='1525' x2='1260' y2='1525' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1525' x2='1250' y2='1520' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1525' x2='1250' y2='1530' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1516' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Команда, ответ, ошибка</text>
+<line x1='45' y1='1595' x2='1550' y2='1595' stroke='#D4DFE8' stroke-width='2'/>
+<text x='45' y='1628' font-family='Arial, sans-serif' font-size='24' font-weight='bold' text-anchor='start' fill='#23364D'>4.0  Обработать поездку и завершение</text>
+<rect x='630' y='1655' width='335' height='350' rx='20' fill='#EAF7F6' stroke='#087F8C' stroke-width='2'/>
+<text x='797' y='1720' font-family='Arial, sans-serif' font-size='25' font-weight='bold' text-anchor='middle' fill='#087F8C'>4.0</text>
+<text x='797' y='1800' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>Учесть телеметрию,</text>
+<text x='797' y='1831' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>проверить парковку,</text>
+<text x='797' y='1862' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>закрыть замок и</text>
+<text x='797' y='1893' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>рассчитать стоимость</text>
+<rect x='45' y='1660' width='255' height='68' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='172.5' y='1701' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E1 · Клиент</text>
+<line x1='300' y1='1684' x2='630' y2='1684' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1684' x2='620' y2='1679' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1684' x2='620' y2='1689' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1675' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Завершение, номер аренды</text>
+<line x1='630' y1='1721' x2='300' y2='1721' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1721' x2='310' y2='1716' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1721' x2='310' y2='1726' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1712' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Статус, сумма / отказ</text>
+<rect x='45' y='1747' width='255' height='68' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='172.5' y='1788' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E4 · Общий контур</text>
+<line x1='300' y1='1771' x2='630' y2='1771' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1771' x2='620' y2='1766' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1771' x2='620' y2='1776' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1762' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Личность и роль</text>
+<line x1='630' y1='1808' x2='300' y2='1808' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1808' x2='310' y2='1803' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1808' x2='310' y2='1813' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1799' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Статус заказа и сумма</text>
+<rect x='45' y='1921' width='255' height='68' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='172.5' y='1962' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E2 · Эмулятор</text>
+<line x1='300' y1='1945' x2='630' y2='1945' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1945' x2='620' y2='1940' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='1945' x2='620' y2='1950' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1936' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Телеметрия, ответ замка</text>
+<line x1='630' y1='1982' x2='300' y2='1982' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1982' x2='310' y2='1977' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='1982' x2='310' y2='1987' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='1973' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Команда закрытия, ID</text>
+<line x1='1260' y1='1660' x2='1545' y2='1660' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1722' x2='1545' y2='1722' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1660' x2='1260' y2='1722' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='1660' x2='1307' y2='1722' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='1698' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D2</text>
+<text x='1425' y='1698' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Техника</text>
+<line x1='1260' y1='1684' x2='965' y2='1684' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='1684' x2='975' y2='1679' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='1684' x2='975' y2='1689' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1675' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Состояние и позиция</text>
+<line x1='965' y1='1719' x2='1260' y2='1719' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1719' x2='1250' y2='1714' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1719' x2='1250' y2='1724' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1710' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Телеметрия, статус</text>
+<line x1='1260' y1='1747' x2='1545' y2='1747' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1809' x2='1545' y2='1809' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1747' x2='1260' y2='1809' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='1747' x2='1307' y2='1809' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='1785' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D3</text>
+<text x='1425' y='1785' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Тарифы и зоны</text>
+<line x1='1260' y1='1771' x2='965' y2='1771' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='1771' x2='975' y2='1766' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='1771' x2='975' y2='1776' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1762' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Активные геозоны</text>
+<line x1='1260' y1='1834' x2='1545' y2='1834' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1896' x2='1545' y2='1896' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1834' x2='1260' y2='1896' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='1834' x2='1307' y2='1896' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='1872' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D4</text>
+<text x='1425' y='1872' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Заказы и аренды</text>
+<line x1='1260' y1='1858' x2='965' y2='1858' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='1858' x2='975' y2='1853' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='1858' x2='975' y2='1863' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1849' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Аренда, снимок тарифа</text>
+<line x1='965' y1='1893' x2='1260' y2='1893' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1893' x2='1250' y2='1888' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1893' x2='1250' y2='1898' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1884' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Статус, время, сумма</text>
+<line x1='1260' y1='1921' x2='1545' y2='1921' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1983' x2='1545' y2='1983' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='1921' x2='1260' y2='1983' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='1921' x2='1307' y2='1983' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='1959' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D5</text>
+<text x='1425' y='1959' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Журнал операций</text>
+<line x1='965' y1='1980' x2='1260' y2='1980' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1980' x2='1250' y2='1975' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='1980' x2='1250' y2='1985' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='1971' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Команда, ответ, решение</text>
+<line x1='45' y1='2050' x2='1550' y2='2050' stroke='#D4DFE8' stroke-width='2'/>
+<text x='45' y='2083' font-family='Arial, sans-serif' font-size='24' font-weight='bold' text-anchor='start' fill='#23364D'>5.0  Обслужить парк</text>
+<rect x='630' y='2110' width='335' height='350' rx='20' fill='#EAF7F6' stroke='#087F8C' stroke-width='2'/>
+<text x='797' y='2175' font-family='Arial, sans-serif' font-size='25' font-weight='bold' text-anchor='middle' fill='#087F8C'>5.0</text>
+<text x='797' y='2255' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>Проверить полномочия</text>
+<text x='797' y='2286' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>и занятость техники,</text>
+<text x='797' y='2317' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='middle' fill='#23364D'>сохранить результат</text>
+<rect x='45' y='2115' width='255' height='68' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='172.5' y='2156' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E3 · Оператор</text>
+<line x1='300' y1='2139' x2='630' y2='2139' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='2139' x2='620' y2='2134' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='2139' x2='620' y2='2144' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='2130' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Действие, техника, причина</text>
+<line x1='630' y1='2176' x2='300' y2='2176' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='2176' x2='310' y2='2171' stroke='#087F8C' stroke-width='2'/>
+<line x1='300' y1='2176' x2='310' y2='2181' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='2167' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Состояние, результат</text>
+<rect x='45' y='2289' width='255' height='68' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='172.5' y='2330' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='middle' fill='#23364D'>E4 · Общий контур</text>
+<line x1='300' y1='2313' x2='630' y2='2313' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='2313' x2='620' y2='2308' stroke='#087F8C' stroke-width='2'/>
+<line x1='630' y1='2313' x2='620' y2='2318' stroke='#087F8C' stroke-width='2'/>
+<text x='465' y='2304' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Личность и роль</text>
+<line x1='1260' y1='2115' x2='1545' y2='2115' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='2177' x2='1545' y2='2177' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='2115' x2='1260' y2='2177' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='2115' x2='1307' y2='2177' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='2153' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D2</text>
+<text x='1425' y='2153' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Техника</text>
+<line x1='1260' y1='2139' x2='965' y2='2139' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='2139' x2='975' y2='2134' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='2139' x2='975' y2='2144' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='2130' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Состояние и телеметрия</text>
+<line x1='965' y1='2174' x2='1260' y2='2174' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='2174' x2='1250' y2='2169' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='2174' x2='1250' y2='2179' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='2165' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Состояние обслуживания</text>
+<line x1='1260' y1='2202' x2='1545' y2='2202' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='2264' x2='1545' y2='2264' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='2202' x2='1260' y2='2264' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='2202' x2='1307' y2='2264' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='2240' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D4</text>
+<text x='1425' y='2240' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Заказы и аренды</text>
+<line x1='1260' y1='2226' x2='965' y2='2226' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='2226' x2='975' y2='2221' stroke='#087F8C' stroke-width='2'/>
+<line x1='965' y1='2226' x2='975' y2='2231' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='2217' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Связанная активная аренда</text>
+<line x1='1260' y1='2376' x2='1545' y2='2376' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='2438' x2='1545' y2='2438' stroke='#23364D' stroke-width='2'/>
+<line x1='1260' y1='2376' x2='1260' y2='2438' stroke='#23364D' stroke-width='2'/>
+<line x1='1307' y1='2376' x2='1307' y2='2438' stroke='#23364D' stroke-width='2'/>
+<text x='1284' y='2414' font-family='Arial, sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='#23364D'>D5</text>
+<text x='1425' y='2414' font-family='Arial, sans-serif' font-size='18' font-weight='normal' text-anchor='middle' fill='#23364D'>Журнал операций</text>
+<line x1='965' y1='2435' x2='1260' y2='2435' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='2435' x2='1250' y2='2430' stroke='#087F8C' stroke-width='2'/>
+<line x1='1260' y1='2435' x2='1250' y2='2440' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='2426' font-family='Arial, sans-serif' font-size='16' font-weight='normal' text-anchor='middle' fill='#23364D'>Действие, причина, автор</text>
+<text x='45' y='2538' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='start' fill='#52647A'>D2 — vehicles; D3 — tariffs + zones; D4 — orders + rentals; D5 — проектный журнал операций.</text>
+<text x='45' y='2575' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='start' fill='#52647A'>Начало и завершение поездки требуют ответа замка. При потере связи занятая техника не освобождается.</text>
+</svg>
