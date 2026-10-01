@@ -141,11 +141,11 @@
             <span class="number" aria-hidden="true">02</span>
             <div class="card-copy">
               <div class="card-title"><h2 id="current-title">Текущая архитектура</h2><span class="badge badge-current">Существующий прототип</span></div>
-              <p class="description">React через Vite обращается к Express и Socket.IO. Бизнес-данные живут в памяти сервера; карта использует Leaflet и OpenStreetMap.</p>
+              <p class="description">React через Vite обращается к FastAPI и WebSocket. Бизнес-данные живут в памяти сервера; карта использует Leaflet и OpenStreetMap.</p>
             </div>
           </div>
           <figure>
-            <a class="preview" href="p2/ru/diagrams/architecture-current.svg" target="_blank" rel="noopener" aria-label="Открыть текущую архитектуру в полном размере, в новой вкладке"><img src="p2/ru/diagrams/architecture-current.svg" alt="Текущая архитектура: пользователь, React, Vite, Express и Socket.IO, массивы в памяти, проверка PostgreSQL и внешние ресурсы карты." loading="lazy"></a>
+            <a class="preview" href="p2/ru/diagrams/architecture-current.svg" target="_blank" rel="noopener" aria-label="Открыть текущую архитектуру в полном размере, в новой вкладке"><img src="p2/ru/diagrams/architecture-current.svg" alt="Текущая архитектура: пользователь, React, Vite, FastAPI и WebSocket, массивы в памяти, проверка PostgreSQL и внешние ресурсы карты." loading="lazy"></a>
             <figcaption>Рисунок 2. Устройство прототипа в режиме разработки. PostgreSQL используется только для проверки соединения через SELECT 1, если доступ настроен.</figcaption>
           </figure>
           <div class="card-actions">
@@ -161,12 +161,12 @@
             <span class="number" aria-hidden="true">03</span>
             <div class="card-copy">
               <div class="card-title"><h2 id="target-title">Целевая архитектура</h2><span class="badge">Проектируется</span></div>
-              <p class="description">Модульный монолит NestJS с общей PostgreSQL/PostGIS, клиентскими экранами React, картой 2ГИС и эмулятором замка. У модулей обозначены владельцы в команде.</p>
+              <p class="description">Модульный монолит FastAPI с общей PostgreSQL/PostGIS, клиентскими экранами React, картой Leaflet/OpenStreetMap, OSRM и эмулятором замка.</p>
             </div>
           </div>
           <figure>
-            <a class="preview" href="p2/ru/diagrams/architecture-target.svg" target="_blank" rel="noopener" aria-label="Открыть целевую архитектуру в полном размере, в новой вкладке"><img src="p2/ru/diagrams/architecture-target.svg" alt="Целевая архитектура YaGo: React и Nginx, модули NestJS, PostgreSQL с PostGIS, 2ГИС, Socket.IO и эмулятор техники." loading="lazy"></a>
-            <figcaption>Рисунок 3. Компоненты будущей системы и их взаимодействие. Модули NestJS работают в одном backend; стрелки между ними обозначают вызовы сервисов.</figcaption>
+            <a class="preview" href="p2/ru/diagrams/architecture-target.svg" target="_blank" rel="noopener" aria-label="Открыть целевую архитектуру в полном размере, в новой вкладке"><img src="p2/ru/diagrams/architecture-target.svg" alt="Целевая архитектура YaGo: React и Nginx, модули FastAPI, PostgreSQL с PostGIS, Leaflet/OpenStreetMap, OSRM, WebSocket и эмулятор техники." loading="lazy"></a>
+            <figcaption>Рисунок 3. Компоненты будущей системы и их взаимодействие. Модули FastAPI работают в одном backend; стрелки между ними обозначают вызовы сервисов.</figcaption>
           </figure>
           <div class="card-actions">
             <a class="view" href="p2/ru/diagrams/architecture-target.svg" target="_blank" rel="noopener">Рассмотреть схему ↗</a>

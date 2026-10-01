@@ -1,8 +1,8 @@
 %% Generated from p2/ru/02-system-architecture.md; edit the Mermaid block there.
 flowchart LR
     User["Пользователь демо"] --> UI["React: src/App.jsx"]
-    UI -->|"HTTP /api; Socket.IO /socket.io"| Vite["Vite :5173 / dev proxy"]
-    Vite --> API["Express + Socket.IO :4000 / server/src/index.js"]
+    UI -->|"HTTP /api; WebSocket /ws"| Vite["Vite :5173 / dev proxy"]
+    Vite --> API["FastAPI + WebSocket :8000 /api"]
     API --> Memory["Массивы restaurants, menu, couriers, orders в памяти"]
     API -->|"только SELECT 1 в /api/health"| PG["PostgreSQL / Supabase при настроенном доступе"]
     UI --> Tiles["Тайлы OpenStreetMap"]

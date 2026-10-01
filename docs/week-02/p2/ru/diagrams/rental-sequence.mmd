@@ -5,7 +5,7 @@ sequenceDiagram
     participant O as Orders + Rentals
     participant DB as PostgreSQL
     participant E as Эмулятор
-    participant G as Socket.IO Gateway
+    participant G as WebSocket manager
     C->>API: Забронировать vehicle_id + ключ идемпотентности
     API->>API: Пользователь, права, входные данные
     API->>O: Создать бронь

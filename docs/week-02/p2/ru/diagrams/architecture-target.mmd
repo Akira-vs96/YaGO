@@ -2,23 +2,23 @@
 flowchart TB
     Client["Клиент / водитель / курьер / ресторан"] --> Web["React: клиентские экраны"]
     Staff["Администратор / оператор техники"] --> AdminUI["React: экраны управления"]
-    Web -->|"HTTPS REST + Socket.IO"| Edge["Nginx / HTTPS / статические файлы"]
-    AdminUI -->|"HTTPS REST + Socket.IO"| Edge
-    Web -->|"карта и тайлы; браузерный ключ"| MapGL["2ГИС MapGL / Map Tiles"]
+    Web -->|"HTTPS REST + WebSocket"| Edge["Nginx / HTTPS / статические файлы"]
+    AdminUI -->|"HTTPS REST + WebSocket"| Edge
+    Web -->|"карта и тайлы"| MapTiles["Leaflet + OpenStreetMap / Map Tiles"]
 
-    subgraph Backend["NestJS — один backend"]
+    subgraph Backend["FastAPI — один backend"]
         API["Controllers / проверка входных данных"]
         Auth["П1: Auth / Sessions / RBAC"]
         Orders["П3: Orders / каталог / назначение"]
         Maps["П2: Maps / Routing / Tracking"]
         Rentals["П4: Scooter / Bike / Rentals"]
         Admin["П5: Admin / Analytics / Tariffs / Zones"]
-        RT["П2: Socket.IO Gateway"]
+        RT["П2: WebSocket manager"]
         Storage["Репозитории / транзакции"]
     end
 
     Edge --> API
-    Edge <-->|"Socket.IO"| RT
+    Edge <-->|"WebSocket"| RT
     API --> Auth
     RT --> Auth
     API --> Orders
@@ -29,7 +29,7 @@ flowchart TB
     Rentals -->|"общий заказ"| Orders
     Orders -->|"тариф и зона"| Admin
     Rentals -->|"тариф и зона"| Admin
-    Maps -->|"серверный HTTP, тайм-аут"| Routing["2ГИС Routing API"]
+    Maps -->|"серверный HTTP, тайм-аут"| Routing["OSRM Routing Service"]
     Rentals -->|"unlock / lock с command_id"| Emulator["Эмулятор замка и телеметрии"]
     Emulator -->|"подтверждение и координаты"| Rentals
     Auth --> Storage
