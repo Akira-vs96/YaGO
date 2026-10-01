@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: yago
+      POSTGRES_USER: yago
+      POSTGRES_PASSWORD: yago
+    ports:
+      - "5432:5432"
+    volumes:
+      - yago-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yago -d yago"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  yago-postgres:
