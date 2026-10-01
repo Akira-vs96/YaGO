@@ -1,0 +1,312 @@
+<mxfile host="app.diagrams.net" modified="2026-10-01T12:00:00.000Z" agent="GitHub Copilot" version="26.0.9" type="device">
+  <diagram id="idef0-a-0" name="A-0 контекст">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="a0-title" value="IDEF0 · A-0 контексттік диаграммасы" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=22;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1">
+          <mxGeometry x="50" y="25" width="700" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a0-subtitle" value="Жүйе: YaGo супер-қосымшасы · Астана" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#52606d;" vertex="1" parent="1">
+          <mxGeometry x="50" y="65" width="600" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="a0-func" value="YaGo қызметтерін&lt;br&gt;көрсету" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=20;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="500" y="320" width="360" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="a0-code" value="A-0" style="text;html=1;align=right;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1">
+          <mxGeometry x="810" y="480" width="40" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="a0-in1" value="Пайдаланушы деректері&lt;br&gt;және қызмет сұранымы" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0;entryY=0.35;entryPerimeter=0;" edge="1" parent="1" target="a0-func">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="50" y="375" as="sourcePoint" /><mxPoint x="0" y="-22" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a0-in2" value="Мекенжайлар, координаттар&lt;br&gt;және сапар мәліметтері" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0;entryY=0.68;entryPerimeter=0;" edge="1" parent="1" target="a0-func">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="50" y="455" as="sourcePoint" /><mxPoint x="0" y="22" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a0-control1" value="Жоба талаптары&lt;br&gt;және қол жеткізу ережелері" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.3;entryY=0;entryPerimeter=0;" edge="1" parent="1" target="a0-func">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="610" y="150" as="sourcePoint" /><mxPoint x="-110" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a0-control2" value="Бизнес-ережелер,&lt;br&gt;мәртебелер мен тарифтер" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.7;entryY=0;entryPerimeter=0;" edge="1" parent="1" target="a0-func">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="760" y="150" as="sourcePoint" /><mxPoint x="110" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a0-out1" value="Құрылған және орындалған тапсырыс&lt;br&gt;немесе жалдау жазбасы" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.35;exitPerimeter=0;" edge="1" parent="1" source="a0-func">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1300" y="375" as="targetPoint" /><mxPoint x="0" y="-22" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a0-out2" value="Бағыт, орындаушыны бекіту&lt;br&gt;және ағымдағы мәртебе" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.68;exitPerimeter=0;" edge="1" parent="1" source="a0-func">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1300" y="455" as="targetPoint" /><mxPoint x="0" y="22" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a0-mech1" value="Клиент, жүргізуші, курьер&lt;br&gt;және оператор" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.3;entryY=1;entryPerimeter=0;" edge="1" parent="1" target="a0-func">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="610" y="690" as="sourcePoint" /><mxPoint x="-110" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a0-mech2" value="React / Leaflet · FastAPI&lt;br&gt;PostgreSQL / PostGIS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.7;entryY=1;entryPerimeter=0;" edge="1" parent="1" target="a0-func">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="760" y="690" as="sourcePoint" /><mxPoint x="110" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a0-mech3" value="OSRM · WebSocket&lt;br&gt;құлып эмуляторы" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.5;entryY=1;entryPerimeter=0;" edge="1" parent="1" target="a0-func">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="690" y="770" as="sourcePoint" /><mxPoint x="130" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="a0-foot" value="IDEF0: сол жақта — кірістер · жоғарыда — басқару әсерлері · оң жақта — шығыстар · төменде — орындау құралдары" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#52606d;" vertex="1" parent="1">
+          <mxGeometry x="50" y="835" width="1000" height="25" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="idef0-a0" name="A0 декомпозициясы">
+    <mxGraphModel dx="2200" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="d-title" value="IDEF0 · A0 функциясының декомпозициясы" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=22;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1">
+          <mxGeometry x="50" y="20" width="700" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="d-subtitle" value="Такси / жеткізу тапсырысын немесе самокат / велосипед жалдауын өңдеу" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#52606d;" vertex="1" parent="1">
+          <mxGeometry x="50" y="60" width="900" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="d-a1" value="Пайдаланушыны және&lt;br&gt;қол жеткізу құқықтарын тексеру" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=15;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="180" y="360" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="d-a1-code" value="A1" style="text;html=1;align=right;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1">
+          <mxGeometry x="365" y="480" width="40" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="d-a2" value="Қызмет сұранымын&lt;br&gt;қабылдау және тексеру" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=15;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="570" y="360" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="d-a2-code" value="A2" style="text;html=1;align=right;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1">
+          <mxGeometry x="755" y="480" width="40" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="d-a3" value="Бағыт пен құнды есептеу,&lt;br&gt;орындаушыны / техниканы&lt;br&gt;бекіту" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=15;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="960" y="360" width="240" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="d-a3-code" value="A3" style="text;html=1;align=right;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1">
+          <mxGeometry x="1165" y="480" width="40" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="d-a4" value="Қызметті орындау&lt;br&gt;және мәртебе&lt;br&gt;жаңартуларын жіберу" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=15;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="360" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="d-a4-code" value="A4" style="text;html=1;align=right;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1">
+          <mxGeometry x="1545" y="480" width="40" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="d-a5" value="Тапсырысты аяқтау&lt;br&gt;және нәтижені сақтау" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=15;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1740" y="360" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="d-a5-code" value="A5" style="text;html=1;align=right;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1">
+          <mxGeometry x="1925" y="480" width="40" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="d-input-user" value="Пайдаланушы деректері&lt;br&gt;және сессия" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" target="d-a1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="50" y="435" as="sourcePoint" /><mxPoint x="0" y="-20" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-flow-1" value="Расталған пайдаланушы / рөл" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="d-a1" target="d-a2">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-22" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-input-request" value="Қызмет түрі, нүктелер,&lt;br&gt;себет немесе техниканың QR-коды" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0;entryY=0.75;entryPerimeter=0;" edge="1" parent="1" target="d-a2">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="50" y="535" as="sourcePoint" /><mxPoint x="0" y="18" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-flow-2" value="Тексерілген сұраным" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="d-a2" target="d-a3">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-22" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-flow-3" value="Бағыт, құн және&lt;br&gt;бекітілген орындаушы" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="d-a3" target="d-a4">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-24" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-flow-4" value="Қызмет мәртебесі&lt;br&gt;мен нәтижесі" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="d-a4" target="d-a5">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-24" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-output" value="Аяқталған тапсырыс / жалдау,&lt;br&gt;соңғы құн және тарих" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;" edge="1" parent="1" source="d-a5">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="2160" y="435" as="targetPoint" /><mxPoint x="0" y="-22" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-control-auth" value="Рөлдер мен қол жеткізу ережелері" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.5;entryY=0;entryPerimeter=0;" edge="1" parent="1" target="d-a1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="290" y="190" as="sourcePoint" /><mxPoint x="85" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-control-order" value="Қызмет ережелері мен мәртебелері" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.5;entryY=0;entryPerimeter=0;" edge="1" parent="1" target="d-a2">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="680" y="190" as="sourcePoint" /><mxPoint x="85" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-control-tariff" value="Тарифтер мен геоқоршаулар" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.5;entryY=0;entryPerimeter=0;" edge="1" parent="1" target="d-a3">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1080" y="190" as="sourcePoint" /><mxPoint x="85" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-control-state" value="Орындау тәртібі&lt;br&gt;мен аяқтау шарттары" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.5;entryY=0;entryPerimeter=0;" edge="1" parent="1" target="d-a4">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1470" y="190" as="sourcePoint" /><mxPoint x="85" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-control-record" value="Құнды есептеу&lt;br&gt;және нәтижені сақтау ережелері" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.5;entryY=0;entryPerimeter=0;" edge="1" parent="1" target="d-a5">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1850" y="190" as="sourcePoint" /><mxPoint x="85" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-mech-ui" value="Клиенттік қосымша&lt;br&gt;React / Leaflet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.5;entryY=1;entryPerimeter=0;" edge="1" parent="1" target="d-a2">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="680" y="770" as="sourcePoint" /><mxPoint x="-105" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-mech-backend" value="FastAPI: қатынасты басқару,&lt;br&gt;тапсырыс, карта, жалдау, әкімшілік" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.5;entryY=1;entryPerimeter=0;" edge="1" parent="1" target="d-a4">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1470" y="770" as="sourcePoint" /><mxPoint x="-85" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-mech-storage" value="PostgreSQL / PostGIS&lt;br&gt;және оқиғалар қоймасы" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.5;entryY=1;entryPerimeter=0;" edge="1" parent="1" target="d-a5">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1850" y="770" as="sourcePoint" /><mxPoint x="-85" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-mech-external" value="OSRM · WebSocket&lt;br&gt;құлып эмуляторы" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;entryX=0.5;entryY=1;entryPerimeter=0;" edge="1" parent="1" target="d-a3">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1080" y="770" as="sourcePoint" /><mxPoint x="125" y="0" as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="d-foot" value="Орындау құралдары — жүйе ресурстары; OSRM және құлып эмуляторы сыртқы жобаланатын компоненттер болып табылады." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#52606d;" vertex="1" parent="1">
+          <mxGeometry x="50" y="900" width="1200" height="25" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="idef1-info" name="IDEF1 ақпараттық модель">
+    <mxGraphModel dx="1850" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1850" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+        <mxCell id="i-title" value="IDEF1 · YaGo ақпараттық моделі" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=22;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1"><mxGeometry x="50" y="25" width="700" height="40" as="geometry" /></mxCell>
+        <mxCell id="i-subtitle" value="Ақпарат көздері, жүйе модульдері және деректер топтары арасындағы байланыс" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#52606d;" vertex="1" parent="1"><mxGeometry x="50" y="65" width="900" height="30" as="geometry" /></mxCell>
+        <mxCell id="i-actors" value="Ақпарат көздері&lt;br&gt;&lt;br&gt;Клиент&lt;br&gt;Жүргізуші / курьер&lt;br&gt;Мейрамхана&lt;br&gt;Оператор / әкімші" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#52606d;strokeWidth=2;fontSize=16;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="55" y="260" width="250" height="270" as="geometry" /></mxCell>
+        <mxCell id="i-ui" value="Клиенттік веб-қосымша&lt;br&gt;React / Leaflet&lt;br&gt;&lt;br&gt;Сұранымдар, карта және&lt;br&gt;мәртебе хабарламалары" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=16;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="300" width="270" height="190" as="geometry" /></mxCell>
+        <mxCell id="i-api" value="FastAPI жүйе модульдері&lt;br&gt;&lt;br&gt;Қолжетімділікті басқару · Тапсырыс&lt;br&gt;Карта · Жалға алу · Әкімшілік&lt;br&gt;&lt;br&gt;REST және WebSocket" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=16;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="965" y="265" width="300" height="260" as="geometry" /></mxCell>
+        <mxCell id="i-data" value="PostgreSQL / PostGIS деректері&lt;br&gt;&lt;br&gt;Пайдаланушылар, рөлдер, сессиялар&lt;br&gt;Тапсырыстар, мейрамханалар, мәзір&lt;br&gt;Орындаушылар, техника, геоқоршаулар&lt;br&gt;Жалдау, тарифтер, тапсырыс тарихы" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#52606d;strokeWidth=2;fontSize=15;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1460" y="245" width="300" height="300" as="geometry" /></mxCell>
+        <mxCell id="i-external" value="Сыртқы және эмуляцияланатын қызметтер&lt;br&gt;&lt;br&gt;OSRM бағыттау қызметі&lt;br&gt;Құлып эмуляторы және телеметрия" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#9a5b13;strokeWidth=2;fontSize=15;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="950" y="650" width="330" height="130" as="geometry" /></mxCell>
+        <mxCell id="i-flow1" value="Пайдаланушы деректері&lt;br&gt;мен әрекеттері" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="i-actors" target="i-ui"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-24" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="i-flow2" value="REST сұранымдары&lt;br&gt;және картадағы таңдау" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="i-ui" target="i-api"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-24" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="i-flow3" value="Тексерілген деректерді&lt;br&gt;оқу / сақтау" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=13;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="i-api" target="i-data"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-24" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="i-flow4" value="Бағыт сұранымы, құлып командасы&lt;br&gt;және телеметрия жауабы" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9a5b13;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitPerimeter=0;entryX=0.5;entryY=1;entryPerimeter=0;" edge="1" parent="1" source="i-external" target="i-api"><mxGeometry relative="1" as="geometry"><mxPoint x="-190" y="0" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="i-flow5" value="Мәртебе мен орын&lt;br&gt;деректерін тарату" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0;exitY=0.75;exitPerimeter=0;entryX=1;entryY=0.75;entryPerimeter=0;" edge="1" parent="1" source="i-api" target="i-ui"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-24" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="i-foot" value="Деректердің тұрақты көзі — серверлік база; браузер PostgreSQL-ге тікелей қосылмайды." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#52606d;" vertex="1" parent="1"><mxGeometry x="55" y="825" width="1100" height="25" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="idef2-dynamic" name="IDEF2 динамикалық модель">
+    <mxGraphModel dx="1800" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+        <mxCell id="s-title" value="IDEF2 · Қызмет көрсету динамикасының тұжырымдамалық моделі" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=22;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1"><mxGeometry x="50" y="25" width="1100" height="40" as="geometry" /></mxCell>
+        <mxCell id="s-subtitle" value="Сұранымдардың келуі, кезек, орындаушы ресурстары және қызмет ұзақтығы" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#52606d;" vertex="1" parent="1"><mxGeometry x="50" y="65" width="900" height="30" as="geometry" /></mxCell>
+        <mxCell id="s-input" value="Клиент сұранымдары&lt;br&gt;&lt;br&gt;Келу қарқыны: λ&lt;br&gt;Қызмет түрі және нүктелер" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#52606d;strokeWidth=2;fontSize=15;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="50" y="330" width="210" height="150" as="geometry" /></mxCell>
+        <mxCell id="s-validate" value="Тексеру және тапсырысты құру&lt;br&gt;&lt;br&gt;Қолжетімділікті тексеру / тапсырыс модулі&lt;br&gt;Өңдеу уақыты: T₁" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=15;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="430" y="330" width="230" height="150" as="geometry" /></mxCell>
+        <mxCell id="s-queue" value="Орындаушыны немесе техниканы күту&lt;br&gt;&lt;br&gt;Кезек ұзындығы: Q&lt;br&gt;Қолжетімді ресурстар саны: c" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#9a5b13;strokeWidth=2;fontSize=15;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="800" y="300" width="250" height="210" as="geometry" /></mxCell>
+        <mxCell id="s-service" value="Қызметті орындау&lt;br&gt;&lt;br&gt;Такси / жеткізу немесе жалдау&lt;br&gt;Ұзақтығы: T₂&lt;br&gt;Маршрут және бос емес уақыт" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=15;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1190" y="330" width="240" height="150" as="geometry" /></mxCell>
+        <mxCell id="s-finish" value="Аяқтау және деректерді сақтау&lt;br&gt;&lt;br&gt;Мәртебе, соңғы құн, тарих&lt;br&gt;WebSocket хабарламасы" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#52606d;strokeWidth=2;fontSize=15;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1580" y="330" width="210" height="150" as="geometry" /></mxCell>
+        <mxCell id="s-flow1" value="Жарамды&lt;br&gt;сұранымдар" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="s-input" target="s-validate"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-22" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="s-flow2" value="Құрылған&lt;br&gt;тапсырыс" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="s-validate" target="s-queue"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-22" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="s-flow3" value="Ресурс бөлінген&lt;br&gt;тапсырыс" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="s-queue" target="s-service"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-22" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="s-flow4" value="Орындалған&lt;br&gt;қызмет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="s-service" target="s-finish"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-22" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="s-parameters" value="Модель параметрлері: λ — сұранымдардың келу қарқыны; T₁ — тексеру уақыты; T₂ — қызмет ұзақтығы; c — қолжетімді ресурс саны. OSRM бағыт ұзақтығына әсер етеді; WebSocket мәртебе өзгерісін таратады." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f1f5f9;strokeColor=#cbd5e1;fontSize=14;fontColor=#334155;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1"><mxGeometry x="240" y="610" width="1030" height="115" as="geometry" /></mxCell>
+        <mxCell id="s-output" value="Зерттелетін көрсеткіштер: күту уақыты · кезектің ең үлкен ұзындығы · орындаушы / техника жүктемесі · қызмет көрсетуден бас тарту үлесі" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1"><mxGeometry x="240" y="755" width="1120" height="55" as="geometry" /></mxCell>
+        <mxCell id="s-foot" value="Тұжырымдамалық модель: T₁, T₂, λ және c нақты деректермен өлшеніп, модель калибрленгенге дейін сандық нәтиже болып саналмайды." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#52606d;" vertex="1" parent="1"><mxGeometry x="50" y="840" width="1300" height="25" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="idef3-process" name="IDEF3 үдеріс сценарийі">
+    <mxGraphModel dx="2200" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+        <mxCell id="p-title" value="IDEF3 · Тапсырысты орындау сценарийі" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=22;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1"><mxGeometry x="50" y="20" width="900" height="40" as="geometry" /></mxCell>
+        <mxCell id="p-subtitle" value="Ортақ кіру және тексеруден кейін қызмет түріне қарай екі тармаққа бөлінеді" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#52606d;" vertex="1" parent="1"><mxGeometry x="50" y="60" width="900" height="30" as="geometry" /></mxCell>
+        <mxCell id="p-start" value="Басталуы" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f1f5f9;strokeColor=#52606d;strokeWidth=2;fontSize=13;fontColor=#172b4d;" vertex="1" parent="1"><mxGeometry x="45" y="420" width="90" height="70" as="geometry" /></mxCell>
+        <mxCell id="p-uob1" value="Пайдаланушыны&lt;br&gt;және рөлді растау" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=15;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="190" y="395" width="190" height="120" as="geometry" /></mxCell>
+        <mxCell id="p-uob2" value="Қызмет сұранымын&lt;br&gt;тексеру және тапсырысты құру" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=15;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="440" y="395" width="220" height="120" as="geometry" /></mxCell>
+        <mxCell id="p-j1" value="X" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff7ed;strokeColor=#9a5b13;strokeWidth=2;fontSize=16;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1"><mxGeometry x="710" y="427" width="56" height="56" as="geometry" /></mxCell>
+        <mxCell id="p-reject" value="Сұранымды қабылдамау&lt;br&gt;және себебін хабарлау" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#9a5b13;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="790" y="100" width="210" height="100" as="geometry" /></mxCell>
+        <mxCell id="p-end-reject" value="Аяқталуы&lt;br&gt;(орындалмады)" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f1f5f9;strokeColor=#52606d;strokeWidth=2;fontSize=12;fontColor=#172b4d;" vertex="1" parent="1"><mxGeometry x="1080" y="115" width="100" height="70" as="geometry" /></mxCell>
+        <mxCell id="p-taxi1" value="Такси / жеткізу бағытын&lt;br&gt;және тарифті есептеу" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="820" y="280" width="220" height="110" as="geometry" /></mxCell>
+        <mxCell id="p-taxi2" value="Жүргізушіні / курьерді&lt;br&gt;тағайындау" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1110" y="280" width="210" height="110" as="geometry" /></mxCell>
+        <mxCell id="p-taxi3" value="Қызметті орындау&lt;br&gt;және мәртебені жаңарту" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1390" y="280" width="220" height="110" as="geometry" /></mxCell>
+        <mxCell id="p-rent1" value="QR-код пен техниканың&lt;br&gt;қолжетімділігін тексеру,&lt;br&gt;бронь жасау" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="820" y="570" width="220" height="120" as="geometry" /></mxCell>
+        <mxCell id="p-rent2" value="Құлыпты ашуды растау&lt;br&gt;және жалдауды бастау" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1110" y="570" width="210" height="120" as="geometry" /></mxCell>
+        <mxCell id="p-rent3" value="Сапарды аяқтау,&lt;br&gt;тұрақ аймағын және&lt;br&gt;құлыпты тексеру" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1390" y="570" width="220" height="120" as="geometry" /></mxCell>
+        <mxCell id="p-j2" value="X" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff7ed;strokeColor=#9a5b13;strokeWidth=2;fontSize=16;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1"><mxGeometry x="1660" y="427" width="56" height="56" as="geometry" /></mxCell>
+        <mxCell id="p-save" value="Нәтижені, соңғы құнды&lt;br&gt;және тарихты сақтау" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1760" y="395" width="220" height="120" as="geometry" /></mxCell>
+        <mxCell id="p-end" value="Аяқталуы" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#f1f5f9;strokeColor=#52606d;strokeWidth=2;fontSize=13;fontColor=#172b4d;" vertex="1" parent="1"><mxGeometry x="2050" y="420" width="95" height="70" as="geometry" /></mxCell>
+        <mxCell id="p-f1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-start" target="p-uob1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-f2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-uob1" target="p-uob2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-f3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-uob2" target="p-j1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-f4" value="Жарамсыз" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9a5b13;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-j1" target="p-reject"><mxGeometry relative="1" as="geometry"><mxPoint x="-28" y="0" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="p-f5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9a5b13;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-reject" target="p-end-reject"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-f6" value="Такси / жеткізу" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-j1" target="p-taxi1"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="-24" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="p-f7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-taxi1" target="p-taxi2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-f8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-taxi2" target="p-taxi3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-f9" value="Самокат / велосипед" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-j1" target="p-rent1"><mxGeometry relative="1" as="geometry"><mxPoint x="0" y="24" as="offset" /></mxGeometry></mxCell>
+        <mxCell id="p-f10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-rent1" target="p-rent2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-f11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-rent2" target="p-rent3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-f12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-taxi3" target="p-j2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-f13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-rent3" target="p-j2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-f14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-j2" target="p-save"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-f15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="p-save" target="p-end"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="p-note" value="X — баламалы тармақты таңдау немесе сценарий тармақтарын біріктіру. Құлып эмуляторы мен OSRM оқу жобасында жобаланатын / эмуляцияланатын компоненттер." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#52606d;" vertex="1" parent="1"><mxGeometry x="50" y="850" width="1500" height="30" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="dfd-level-1" name="DFD деңгейі 1">
+    <mxGraphModel dx="1900" dy="1050" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="f-title" value="DFD · YaGo деректер ағындары" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=22;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1">
+          <mxGeometry x="50" y="25" width="800" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="f-subtitle" value="1-деңгей · тапсырысты немесе микромобильділік жалдауын өңдеудің мақсатты моделі" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#52606d;" vertex="1" parent="1">
+          <mxGeometry x="50" y="65" width="1000" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="f-client" value="Сыртқы субъект&lt;br&gt;Клиент" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#52606d;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="275" width="190" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="f-operator" value="Сыртқы субъект&lt;br&gt;Жүргізуші / курьер /&lt;br&gt;техника операторы" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#52606d;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1650" y="275" width="210" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="f-admin" value="Сыртқы субъект&lt;br&gt;Әкімші" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#52606d;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="675" width="190" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="f-osrm" value="Сыртқы жүйе&lt;br&gt;OSRM" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#9a5b13;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="970" y="115" width="180" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="f-lock" value="Сыртқы жүйе&lt;br&gt;Құлып эмуляторы" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#9a5b13;strokeWidth=2;fontSize=14;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1430" y="115" width="210" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="f-p1" value="1.0&lt;br&gt;Пайдаланушыны&lt;br&gt;растау" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="310" y="270" width="190" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="f-p2" value="2.0&lt;br&gt;Сұранымды тексеру&lt;br&gt;және қабылдау" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="590" y="270" width="220" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="f-p3" value="3.0&lt;br&gt;Бағытты есептеу және&lt;br&gt;ресурсты тағайындау" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="270" width="230" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="f-p4" value="4.0&lt;br&gt;Қызметті орындау және&lt;br&gt;мәртебені жаңарту" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="270" width="230" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="f-p5" value="5.0&lt;br&gt;Нәтижені тіркеу&lt;br&gt;және жабу" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="990" y="560" width="230" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="f-p6" value="6.0&lt;br&gt;Тарифтер мен паркті&lt;br&gt;басқару" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#172b4d;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="590" y="560" width="220" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="f-d1" value="D1&lt;br&gt;Пайдаланушылар&lt;br&gt;және сессиялар" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f1f5f9;strokeColor=#52606d;strokeWidth=2;fontSize=13;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="300" y="465" width="210" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="f-d2" value="D2&lt;br&gt;Тарифтер, техника&lt;br&gt;және геозоналар" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f1f5f9;strokeColor=#52606d;strokeWidth=2;fontSize=13;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="620" y="755" width="230" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="f-d3" value="D3&lt;br&gt;Тапсырыстар&lt;br&gt;және жалдаулар" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f1f5f9;strokeColor=#52606d;strokeWidth=2;fontSize=13;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="500" width="220" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="f-d4" value="D4&lt;br&gt;Оқиғалар және&lt;br&gt;қызмет тарихы" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f1f5f9;strokeColor=#52606d;strokeWidth=2;fontSize=13;fontColor=#172b4d;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1430" y="650" width="220" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="f-e1" value="Тіркелу / кіру деректері" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.35;exitPerimeter=0;entryX=0;entryY=0.35;entryPerimeter=0;" edge="1" parent="1" source="f-client" target="f-p1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f-e2" value="Тексерілген сессия" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="f-p1" target="f-p2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f-e3" value="Қызмет түрі, мекенжайлар,&lt;br&gt;себет немесе QR-код" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.75;exitPerimeter=0;entryX=0;entryY=0.75;entryPerimeter=0;" edge="1" parent="1" source="f-client" target="f-p2"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="270" y="430" /><mxPoint x="560" y="430" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e4" value="Тексерілген тапсырыс" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="f-p2" target="f-p3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f-e5" value="Маршрут сұранымы" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9a5b13;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitPerimeter=0;entryX=0.5;entryY=1;entryPerimeter=0;" edge="1" parent="1" source="f-p3" target="f-osrm"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1015" y="225" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e6" value="Тариф және қолжетімді ресурс" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitPerimeter=0;entryX=0.5;entryY=0;entryPerimeter=0;" edge="1" parent="1" source="f-d2" target="f-p3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="735" y="420" /><mxPoint x="1015" y="420" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e7" value="Тағайындалған қызмет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="f-p3" target="f-p4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f-e8" value="Бронь / жалдау жазбасы" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitPerimeter=0;entryX=0.2;entryY=0;entryPerimeter=0;" edge="1" parent="1" source="f-p3" target="f-d3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1015" y="450" /><mxPoint x="1305" y="450" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e9" value="Құлыпты ашу / жабу командасы" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9a5b13;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitPerimeter=0;entryX=0.5;entryY=1;entryPerimeter=0;" edge="1" parent="1" source="f-p4" target="f-lock"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1345" y="225" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e10" value="Орындау тапсырмасы /&lt;br&gt;мәртебе және координаттар" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="f-p4" target="f-operator"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f-e11" value="Орындау мәртебесі / координаттар" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0;exitY=0.8;exitPerimeter=0;entryX=1;entryY=0.8;entryPerimeter=0;" edge="1" parent="1" source="f-operator" target="f-p4"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1600" y="415" /><mxPoint x="1190" y="415" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e12" value="Аяқталған қызмет және құн" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitPerimeter=0;entryX=0.5;entryY=0;entryPerimeter=0;" edge="1" parent="1" source="f-p4" target="f-p5"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1345" y="430" /><mxPoint x="1105" y="430" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e13" value="Тапсырыс мәртебесі" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0;exitY=0.55;exitPerimeter=0;entryX=0;entryY=0.8;entryPerimeter=0;" edge="1" parent="1" source="f-d3" target="f-p5"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1215" y="555" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e14" value="Қорытынды жазба" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.65;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="f-p5" target="f-d4"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1300" y="630" /><mxPoint x="1400" y="700" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e15" value="Тариф / парк өзгерістері" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitPerimeter=0;entryX=0;entryY=0.5;entryPerimeter=0;" edge="1" parent="1" source="f-admin" target="f-p6"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="500" y="717" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e16" value="Бекітілген тарифтер / техника" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitPerimeter=0;entryX=0.5;entryY=1;entryPerimeter=0;" edge="1" parent="1" source="f-p6" target="f-d2"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="700" y="710" /><mxPoint x="735" y="710" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e17" value="Пайдаланушы жазбасы /&lt;br&gt;растау нәтижесі" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=11;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitPerimeter=0;entryX=0.5;entryY=0;entryPerimeter=0;" edge="1" parent="1" source="f-p1" target="f-d1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="405" y="415" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e18" value="Сессия / рөлдер" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=11;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0;exitY=0.2;exitPerimeter=0;entryX=0.5;entryY=0;entryPerimeter=0;" edge="1" parent="1" source="f-d1" target="f-p1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="270" y="485" /><mxPoint x="405" y="485" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e19" value="Маршрут, қашықтық, ETA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9a5b13;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitPerimeter=0;entryX=0.5;entryY=0;entryPerimeter=0;" edge="1" parent="1" source="f-osrm" target="f-p3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1080" y="225" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e20" value="Құлып растауы және телеметрия" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9a5b13;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitPerimeter=0;entryX=0.8;entryY=0;entryPerimeter=0;" edge="1" parent="1" source="f-lock" target="f-p4"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1535" y="225" /><mxPoint x="1415" y="225" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e21" value="Жалдау мәртебесі және орын деректері" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#52606d;fontSize=11;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitPerimeter=0;entryX=0.5;entryY=0;entryPerimeter=0;" edge="1" parent="1" source="f-p4" target="f-d3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1345" y="475" /><mxPoint x="1370" y="475" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-e22" value="Қызмет нәтижесі / түбіртек" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#334155;fontSize=12;fontColor=#172b4d;labelBackgroundColor=#ffffff;exitX=0;exitY=0.75;exitPerimeter=0;entryX=0.5;entryY=1;entryPerimeter=0;" edge="1" parent="1" source="f-p5" target="f-client"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="940" y="640" /><mxPoint x="940" y="890" /><mxPoint x="145" y="890" /></Array></mxGeometry></mxCell>
+        <mxCell id="f-note" value="Белгілер: тікбұрыш — сыртқы субъект / жүйе · дөңгелектелген блок — процесс · цилиндр — деректер қоймасы · бағытталған сызық — деректер ағыны. Бұл — жобаланатын мақсатты модель, орындалған функциялардың тізімі емес." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#52606d;" vertex="1" parent="1">
+          <mxGeometry x="50" y="920" width="1650" height="45" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
