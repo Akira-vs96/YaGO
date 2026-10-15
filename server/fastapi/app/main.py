@@ -99,7 +99,7 @@ class Order(Base):
 class OrderItem(Base):
     __tablename__ = "order_items"
 
-    id: Mapped[str] = mapped_column(String(40), primary_key=True, default=lambda: f"oi-{uuid4().hex[:12]}")
+    id: Mapped[str] = mapped_column(String(40), primary_key=True, default=lambda: str(uuid4()))
     order_id: Mapped[str] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"), index=True)
     menu_item_id: Mapped[str] = mapped_column(ForeignKey("menu_items.id"), nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
@@ -144,6 +144,10 @@ def distance_km(start: Coordinates, end: Coordinates) -> float:
 
 
 def ensure_schema() -> None:
+    migration_path = os.path.join(os.path.dirname(__file__), "../migrations/001_er_model.sql")
+    with open(migration_path, encoding="utf-8") as migration:
+        with engine.begin() as connection:
+            connection.execute(text(migration.read()))
     Base.metadata.create_all(engine)
     inspector = inspect(engine)
     if "restaurants" in inspector.get_table_names() and "address" not in {
@@ -426,7 +430,7 @@ async def create_order(body: CreateOrder, session: DbSession) -> dict:
         total = round(float(taxi_base_fare) + distance_km(body.start, body.end) * float(taxi_price_per_km))
 
     order = Order(
-        id=f"o-{uuid4().hex[:12]}",
+        id=str(uuid4()),
         customer=body.customer.strip(),
         type=body.type,
         restaurant_id=restaurant_id,
