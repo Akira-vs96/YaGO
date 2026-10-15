@@ -1,0 +1,87 @@
+<mxfile host="app.diagrams.net" modified="2026-10-15T11:45:00.000Z" agent="YaGo" version="26.0.9" type="device">
+  <diagram id="yago-er-3nf" name="YaGo ER 3NF">
+    <mxGraphModel dx="1800" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="YaGo — логическая ER-модель PostgreSQL (3НФ)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=24;fontStyle=1;fontColor=#172b4d;" vertex="1" parent="1">
+          <mxGeometry x="40" y="25" width="760" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="PK — первичный ключ · FK — внешний ключ · UK — уникальное ограничение · все справочники независимы от транзакционных таблиц" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontColor=#52606d;" vertex="1" parent="1">
+          <mxGeometry x="40" y="65" width="1200" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="users" value="&lt;b&gt;users&lt;/b&gt;&lt;hr&gt;PK id UUID&lt;br&gt;email VARCHAR UK&lt;br&gt;phone VARCHAR UK&lt;br&gt;password_hash TEXT&lt;br&gt;full_name VARCHAR&lt;br&gt;created_at TIMESTAMPTZ&lt;br&gt;is_active BOOLEAN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f1ff;strokeColor=#2563eb;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="245" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="roles" value="&lt;b&gt;roles&lt;/b&gt;&lt;hr&gt;PK code VARCHAR&lt;br&gt;name VARCHAR UK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f1ff;strokeColor=#2563eb;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="390" width="245" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="user_roles" value="&lt;b&gt;user_roles&lt;/b&gt;&lt;hr&gt;PK/FK user_id UUID&lt;br&gt;PK/FK role_code VARCHAR&lt;br&gt;assigned_at TIMESTAMPTZ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#16a34a;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="330" y="255" width="245" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="addresses" value="&lt;b&gt;addresses&lt;/b&gt;&lt;hr&gt;PK id UUID&lt;br&gt;FK user_id UUID&lt;br&gt;label VARCHAR&lt;br&gt;address_text VARCHAR&lt;br&gt;lat NUMERIC&lt;br&gt;lng NUMERIC&lt;br&gt;created_at TIMESTAMPTZ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#ea580c;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="330" y="30" width="245" height="175" as="geometry"/>
+        </mxCell>
+        <mxCell id="sessions" value="&lt;b&gt;sessions&lt;/b&gt;&lt;hr&gt;PK id UUID&lt;br&gt;FK user_id UUID&lt;br&gt;token_hash TEXT UK&lt;br&gt;expires_at TIMESTAMPTZ&lt;br&gt;revoked_at TIMESTAMPTZ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="550" width="245" height="145" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="restaurants" value="&lt;b&gt;restaurants&lt;/b&gt;&lt;hr&gt;PK id UUID&lt;br&gt;FK owner_user_id UUID NULL&lt;br&gt;FK address_id UUID&lt;br&gt;name VARCHAR&lt;br&gt;cuisine VARCHAR&lt;br&gt;status VARCHAR&lt;br&gt;created_at TIMESTAMPTZ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#ea580c;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="660" y="30" width="260" height="175" as="geometry"/>
+        </mxCell>
+        <mxCell id="menu_categories" value="&lt;b&gt;menu_categories&lt;/b&gt;&lt;hr&gt;PK id UUID&lt;br&gt;name VARCHAR UK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fefce8;strokeColor=#ca8a04;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="660" y="255" width="260" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="menu_items" value="&lt;b&gt;menu_items&lt;/b&gt;&lt;hr&gt;PK id UUID&lt;br&gt;FK restaurant_id UUID&lt;br&gt;FK category_id UUID&lt;br&gt;name VARCHAR&lt;br&gt;description TEXT&lt;br&gt;price NUMERIC&lt;br&gt;is_available BOOLEAN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fefce8;strokeColor=#ca8a04;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="660" y="410" width="260" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="performers" value="&lt;b&gt;performers&lt;/b&gt;&lt;hr&gt;PK id UUID&lt;br&gt;FK user_id UUID UK&lt;br&gt;FK address_id UUID NULL&lt;br&gt;type VARCHAR&lt;br&gt;status VARCHAR&lt;br&gt;created_at TIMESTAMPTZ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f1ff;strokeColor=#2563eb;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="660" y="640" width="260" height="145" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="service_types" value="&lt;b&gt;service_types&lt;/b&gt;&lt;hr&gt;PK code VARCHAR&lt;br&gt;name VARCHAR UK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#16a34a;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="30" width="260" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="order_statuses" value="&lt;b&gt;order_statuses&lt;/b&gt;&lt;hr&gt;PK code VARCHAR&lt;br&gt;name VARCHAR UK&lt;br&gt;is_final BOOLEAN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#16a34a;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="180" width="260" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="tariffs" value="&lt;b&gt;tariffs&lt;/b&gt;&lt;hr&gt;PK id UUID&lt;br&gt;FK service_type_code VARCHAR&lt;br&gt;name VARCHAR&lt;br&gt;base_fare NUMERIC&lt;br&gt;price_per_km NUMERIC&lt;br&gt;price_per_minute NUMERIC&lt;br&gt;valid_from TIMESTAMPTZ&lt;br&gt;valid_to TIMESTAMPTZ NULL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fefce8;strokeColor=#ca8a04;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="350" width="260" height="175" as="geometry"/>
+        </mxCell>
+        <mxCell id="orders" value="&lt;b&gt;orders&lt;/b&gt;&lt;hr&gt;PK id UUID&lt;br&gt;FK customer_id UUID&lt;br&gt;FK service_type_code VARCHAR&lt;br&gt;FK status_code VARCHAR&lt;br&gt;FK tariff_id UUID&lt;br&gt;FK pickup_address_id UUID&lt;br&gt;FK dropoff_address_id UUID&lt;br&gt;FK restaurant_id UUID NULL&lt;br&gt;FK performer_id UUID NULL&lt;br&gt;created_at TIMESTAMPTZ&lt;br&gt;accepted_at TIMESTAMPTZ NULL&lt;br&gt;completed_at TIMESTAMPTZ NULL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#dc2626;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="575" width="260" height="235" as="geometry"/>
+        </mxCell>
+        <mxCell id="order_items" value="&lt;b&gt;order_items&lt;/b&gt;&lt;hr&gt;PK id UUID&lt;br&gt;FK order_id UUID&lt;br&gt;FK menu_item_id UUID&lt;br&gt;quantity INTEGER&lt;br&gt;unit_price NUMERIC&lt;br&gt;item_name_snapshot VARCHAR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#dc2626;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="500" width="260" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="order_events" value="&lt;b&gt;order_status_history&lt;/b&gt;&lt;hr&gt;PK id UUID&lt;br&gt;FK order_id UUID&lt;br&gt;FK status_code VARCHAR&lt;br&gt;FK changed_by_user_id UUID NULL&lt;br&gt;changed_at TIMESTAMPTZ&lt;br&gt;comment TEXT NULL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#dc2626;fontSize=12;align=left;spacing=8;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="720" width="260" height="175" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" value="назначает" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;startArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="users" target="user_roles"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" value="определяет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="roles" target="user_roles"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" value="создаёт" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="users" target="sessions"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" value="сохраняет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="users" target="addresses"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" value="владеет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="users" target="restaurants"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" value="профиль" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="users" target="performers"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" value="адрес" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="addresses" target="restaurants"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" value="содержит" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="restaurants" target="menu_items"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" value="классифицирует" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="menu_categories" target="menu_items"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" value="исполнитель" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="addresses" target="performers"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e11" value="тарифицирует" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="service_types" target="tariffs"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e12" value="задаёт услугу" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="service_types" target="orders"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e13" value="имеет статус" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="order_statuses" target="orders"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e14" value="оформляет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="users" target="orders"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e15" value="заказывает" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="orders" target="order_items"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e16" value="выбирается" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="menu_items" target="order_items"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e17" value="изменяется" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="orders" target="order_events"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e18" value="исполняет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="performers" target="orders"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e19" value="адрес отправления/назначения" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="addresses" target="orders"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e20" value="применяется" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="tariffs" target="orders"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e21" value="история статусов" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="order_statuses" target="order_events"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e22" value="автор изменения" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;strokeColor=#64748b;fontSize=11;" edge="1" parent="1" source="users" target="order_events"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
