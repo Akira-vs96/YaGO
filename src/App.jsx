@@ -53,15 +53,19 @@ function App() {
   const [connectionStatus, setConnectionStatus] = useState('connecting');
   const [selectedTab, setSelectedTab] = useState('home');
   const [selectedOrderType, setSelectedOrderType] = useState('food');
-  const [selectedRestaurant, setSelectedRestaurant] = useState('r1');
+  const [selectedRestaurant, setSelectedRestaurant] = useState('');
   const [cart, setCart] = useState({});
   const [form, setForm] = useState({
-    customer: 'Айгерим',
-    startLat: 51.1694,
-    startLng: 71.4491,
-    endLat: 51.1705,
-    endLng: 71.4308
+    customer: '',
+    startAddress: '',
+    startLat: '',
+    startLng: '',
+    endAddress: '',
+    endLat: '',
+    endLng: ''
   });
+  const [locationLoading, setLocationLoading] = useState({ start: false, end: false });
+  const [locationResults, setLocationResults] = useState({ start: [], end: [] });
 
   useEffect(() => {
     let retryTimer;
@@ -83,6 +87,7 @@ function App() {
         if (disposed) return;
         setConfig(nextConfig);
         setRestaurants(nextRestaurants);
+        setSelectedRestaurant(previous => previous || nextRestaurants[0]?.id || '');
         setOrders(nextOrders);
         setCouriers(nextCouriers);
         setApiError('');
@@ -125,7 +130,7 @@ function App() {
   }, []);
 
   const selectedRestaurantData = useMemo(() =>
-    restaurants.find(item => item.id === selectedRestaurant) || restaurants[0],
+    restaurants.find(item => item.id === selectedRestaurant),
     [restaurants, selectedRestaurant]
   );
   const visibleOrders = useMemo(() => {
@@ -185,6 +190,34 @@ function App() {
     });
   };
 
+  const findAddress = async (point) => {
+    const address = form[`${point}Address`].trim();
+    if (!address) return;
+    setLocationLoading(previous => ({ ...previous, [point]: true }));
+    setApiError('');
+    try {
+      const response = await fetch(`/api/geocode?q=${encodeURIComponent(address)}&limit=5`);
+      const results = await response.json();
+      if (!response.ok) throw new Error(results.detail || 'Не удалось найти адрес');
+      if (!results.length) throw new Error('По этому запросу адреса не найдены');
+      setLocationResults(previous => ({ ...previous, [point]: results }));
+    } catch (error) {
+      setApiError(error.message || 'Не удалось найти адрес');
+    } finally {
+      setLocationLoading(previous => ({ ...previous, [point]: false }));
+    }
+  };
+
+  const selectAddress = (point, result) => {
+    setForm(previous => ({
+      ...previous,
+      [`${point}Address`]: result.address,
+      [`${point}Lat`]: result.lat,
+      [`${point}Lng`]: result.lng
+    }));
+    setLocationResults(previous => ({ ...previous, [point]: [] }));
+  };
+
   const handleCreateOrder = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
@@ -196,8 +229,8 @@ function App() {
       items: selectedOrderType === 'food'
         ? cartLines.map(item => ({ menuItemId: item.id, quantity: item.quantity }))
         : [],
-      start: { lat: Number(form.startLat), lng: Number(form.startLng) },
-      end: { lat: Number(form.endLat), lng: Number(form.endLng) }
+      start: { address: form.startAddress.trim(), lat: Number(form.startLat), lng: Number(form.startLng) },
+      end: { address: form.endAddress.trim(), lat: Number(form.endLat), lng: Number(form.endLng) }
     };
 
     try {
@@ -235,7 +268,9 @@ function App() {
     }
   };
 
-  const mapCenter = [51.1694, 71.4491];
+  const mapCenter = config?.mapCenter ? [config.mapCenter.lat, config.mapCenter.lng] : [0, 0];
+  const hasValidLocations = [form.startLat, form.startLng, form.endLat, form.endLng]
+    .every(value => value !== '' && Number.isFinite(Number(value)));
 
   return (
     <div className="app-shell">
@@ -288,9 +323,9 @@ function App() {
                 setSelectedRestaurant(event.target.value);
                 setCart({});
               }}>
-                {restaurants.map((restaurant) => (
+                {restaurants.length ? restaurants.map((restaurant) => (
                   <option key={restaurant.id} value={restaurant.id}>{restaurant.name}</option>
-                ))}
+                )) : <option value="">Нет доступных заведений</option>}
               </select>
             </label>
           ) : null}
@@ -316,31 +351,42 @@ function App() {
               )) : <p className="empty-cart">Выберите блюда в меню</p>}
               <div className="cart-total"><span>Итого</span><strong>{formatCurrency(cartTotal)}</strong></div>
             </div>
-          ) : <p className="tariff-note">Демо-тариф такси · 2 800 ₸</p>}
+          ) : <p className="tariff-note">Стоимость поездки будет рассчитана по тарифу оператора.</p>}
 
-          <div className="two-column">
-            <label>
-              Lat A
-              <input type="number" step="0.0001" value={form.startLat} onChange={(e) => setForm({ ...form, startLat: e.target.value })} />
-            </label>
-            <label>
-              Lng A
-              <input type="number" step="0.0001" value={form.startLng} onChange={(e) => setForm({ ...form, startLng: e.target.value })} />
-            </label>
-          </div>
+          {[
+            ['start', 'Откуда'],
+            ['end', 'Куда']
+          ].map(([point, label]) => (
+            <div className="location-field" key={point}>
+              <label>
+                {label}
+                <div className="address-search">
+                  <input
+                    value={form[`${point}Address`]}
+                    placeholder="Например: проспект Республики, 29А"
+                    onChange={(event) => setForm({ ...form, [`${point}Address`]: event.target.value })}
+                  />
+                  <button type="button" onClick={() => findAddress(point)} disabled={locationLoading[point]}>
+                    {locationLoading[point] ? '…' : 'Найти'}
+                  </button>
+                </div>
+              </label>
+              {locationResults[point].length ? (
+                <div className="address-results">
+                  {locationResults[point].map(result => (
+                    <button type="button" key={`${result.lat}-${result.lng}`} onClick={() => selectAddress(point, result)}>
+                      {result.address}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              <div className="coordinates-hint">
+                {Number(form[`${point}Lat`]).toFixed(6)}, {Number(form[`${point}Lng`]).toFixed(6)}
+              </div>
+            </div>
+          ))}
 
-          <div className="two-column">
-            <label>
-              Lat B
-              <input type="number" step="0.0001" value={form.endLat} onChange={(e) => setForm({ ...form, endLat: e.target.value })} />
-            </label>
-            <label>
-              Lng B
-              <input type="number" step="0.0001" value={form.endLng} onChange={(e) => setForm({ ...form, endLng: e.target.value })} />
-            </label>
-          </div>
-
-          <button className="primary-button" type="submit" form="order-form" disabled={isSubmitting || (selectedOrderType === 'food' && cartLines.length === 0)}>
+          <button className="primary-button" type="submit" form="order-form" disabled={isSubmitting || !hasValidLocations || (selectedOrderType === 'food' && (!selectedRestaurant || cartLines.length === 0))}>
             {isSubmitting ? 'Сохраняем…' : 'Создать заказ'}
           </button>
           </form>
@@ -385,6 +431,7 @@ function App() {
               <Marker key={restaurant.id} position={[restaurant.lat, restaurant.lng]} icon={defaultIcon}>
                 <Popup>
                   <strong>{restaurant.name}</strong><br />
+                  {restaurant.address}<br />
                   {restaurant.cuisine}<br />
                   {restaurant.eta} мин до доставки
                 </Popup>
@@ -424,6 +471,15 @@ function App() {
                 </Polyline>
               );
             })}
+
+            {visibleOrders.flatMap(order => [
+              { ...order.start, id: `${order.id}-start`, label: `Откуда: ${order.start.address || 'Адрес не указан'}` },
+              { ...order.end, id: `${order.id}-end`, label: `Куда: ${order.end.address || 'Адрес не указан'}` }
+            ]).map(point => (
+              <Marker key={point.id} position={[point.lat, point.lng]} icon={defaultIcon}>
+                <Popup>{point.label}</Popup>
+              </Marker>
+            ))}
           </MapContainer>
         </div>
 
@@ -438,11 +494,11 @@ function App() {
           </div>
           <div className="metric">
             <span>Средняя доставка</span>
-            <strong>18-25 мин</strong>
+            <strong>—</strong>
           </div>
           <div className="metric">
             <span>Город</span>
-            <strong>Астана</strong>
+            <strong>{config?.city || '—'}</strong>
           </div>
         </section>
 
@@ -473,7 +529,7 @@ function App() {
                   ))}
                 </ul>
               </div>
-            ) : null}
+            ) : <p className="orders-empty">Заведения ещё не подключены оператором.</p>}
           </div>
 
           <div className="card">

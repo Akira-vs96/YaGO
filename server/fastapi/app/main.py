@@ -1,5 +1,6 @@
 import json
 import os
+from math import asin, cos, radians, sin, sqrt
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Annotated, Literal
@@ -10,7 +11,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, WebSocket, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, create_engine, select
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, create_engine, inspect, select, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship, sessionmaker
 from sqlalchemy.types import JSON
@@ -24,6 +25,11 @@ database_url = os.getenv(
 )
 osrm_base_url = os.getenv("OSRM_BASE_URL", "https://router.project-osrm.org").rstrip("/")
 osrm_timeout = float(os.getenv("OSRM_TIMEOUT_SECONDS", "5"))
+nominatim_base_url = os.getenv("NOMINATIM_BASE_URL", "https://nominatim.openstreetmap.org").rstrip("/")
+nominatim_timeout = float(os.getenv("NOMINATIM_TIMEOUT_SECONDS", "8"))
+nominatim_user_agent = os.getenv("NOMINATIM_USER_AGENT", "YaGo")
+taxi_base_fare = os.getenv("TAXI_BASE_FARE")
+taxi_price_per_km = os.getenv("TAXI_PRICE_PER_KM")
 cors_origins = [
     origin.strip()
     for origin in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
@@ -45,6 +51,7 @@ class Restaurant(Base):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     lat: Mapped[float] = mapped_column(Float, nullable=False)
     lng: Mapped[float] = mapped_column(Float, nullable=False)
+    address: Mapped[str | None] = mapped_column(String(500), nullable=True)
     cuisine: Mapped[str] = mapped_column(String(120), nullable=False)
     eta: Mapped[int] = mapped_column(Integer, nullable=False, default=25)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
@@ -106,6 +113,10 @@ class Coordinates(BaseModel):
     lng: float = Field(ge=-180, le=180)
 
 
+class Location(Coordinates):
+    address: str = Field(min_length=1, max_length=500)
+
+
 class OrderLineInput(BaseModel):
     menuItemId: str
     quantity: int = Field(ge=1, le=99)
@@ -116,60 +127,35 @@ class CreateOrder(BaseModel):
     type: Literal["food", "taxi"]
     restaurantId: str | None = None
     items: list[OrderLineInput] = Field(default_factory=list, max_length=50)
-    start: Coordinates
-    end: Coordinates
+    start: Location
+    end: Location
 
 
 class StatusUpdate(BaseModel):
     status: Literal["assigned", "in_progress", "completed", "cancelled"]
 
 
-SEED_RESTAURANTS = [
-    ("r1", "Bukhara", 51.1676, 71.4258, "Центральная Азия", 18),
-    ("r2", "Caffe Luna", 51.1734, 71.4524, "Кофе и бургеры", 22),
-    ("r3", "Sakura Wok", 51.1612, 71.4307, "Японская кухня", 25),
-]
-SEED_MENU = [
-    ("m1", "r1", "Плов", 2200, "Основное"),
-    ("m2", "r1", "Самса с курицей", 750, "Закуски"),
-    ("m3", "r1", "Чай тан", 500, "Напитки"),
-    ("m4", "r2", "Бургер Classic", 1900, "Бургеры"),
-    ("m5", "r2", "Картофель фри", 700, "Закуски"),
-    ("m6", "r2", "Латте", 650, "Напитки"),
-    ("m7", "r3", "Рис с курицей", 2400, "Основное"),
-    ("m8", "r3", "Гункан", 990, "Закуски"),
-    ("m9", "r3", "Морс", 500, "Напитки"),
-]
-SEED_PERFORMERS = [
-    ("c1", "Ержан", "courier", 51.1688, 71.4441, "available"),
-    ("c2", "Дина", "courier", 51.175, 71.4385, "busy"),
-    ("c3", "Тимур", "driver", 51.1636, 71.4522, "available"),
-]
-TAXI_DEMO_FARE = 2800
+def distance_km(start: Coordinates, end: Coordinates) -> float:
+    lat1, lat2 = radians(start.lat), radians(end.lat)
+    delta_lat = radians(end.lat - start.lat)
+    delta_lng = radians(end.lng - start.lng)
+    haversine = sin(delta_lat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(delta_lng / 2) ** 2
+    return 6371 * 2 * asin(sqrt(haversine))
 
 
-def seed_database() -> None:
-    with SessionLocal.begin() as session:
-        if session.scalar(select(Restaurant.id).limit(1)) is None:
-            session.add_all(
-                Restaurant(id=row[0], name=row[1], lat=row[2], lng=row[3], cuisine=row[4], eta=row[5])
-                for row in SEED_RESTAURANTS
-            )
-            session.add_all(
-                MenuItem(id=row[0], restaurant_id=row[1], name=row[2], price=row[3], category=row[4])
-                for row in SEED_MENU
-            )
-        if session.scalar(select(Performer.id).limit(1)) is None:
-            session.add_all(
-                Performer(id=row[0], name=row[1], role=row[2], lat=row[3], lng=row[4], status=row[5])
-                for row in SEED_PERFORMERS
-            )
+def ensure_schema() -> None:
+    Base.metadata.create_all(engine)
+    inspector = inspect(engine)
+    if "restaurants" in inspector.get_table_names() and "address" not in {
+        column["name"] for column in inspector.get_columns("restaurants")
+    }:
+        with engine.begin() as connection:
+            connection.execute(text("ALTER TABLE restaurants ADD COLUMN address VARCHAR(500)"))
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    Base.metadata.create_all(engine)
-    seed_database()
+    ensure_schema()
     yield
     engine.dispose()
 
@@ -306,6 +292,81 @@ async def get_route(
     }
 
 
+@app.get("/api/geocode")
+async def geocode(
+    q: str = Query(min_length=3, max_length=200),
+    limit: int = Query(default=5, ge=1, le=10),
+) -> list[dict]:
+    """Find address points using OpenStreetMap's Nominatim geocoder."""
+    query = q if "астан" in q.lower() or "astana" in q.lower() else f"{q}, Астана, Казахстан"
+    try:
+        async with httpx.AsyncClient(timeout=nominatim_timeout) as client:
+            response = await client.get(
+                f"{nominatim_base_url}/search",
+                params={
+                    "q": query,
+                    "format": "jsonv2",
+                    "addressdetails": 1,
+                    "limit": limit,
+                    "countrycodes": "kz",
+                    "accept-language": "ru",
+                },
+                headers={"User-Agent": nominatim_user_agent},
+            )
+            response.raise_for_status()
+            results = response.json()
+    except (httpx.HTTPError, ValueError) as error:
+        raise HTTPException(
+            status_code=503,
+            detail="Сервис поиска адресов временно недоступен",
+        ) from error
+
+    return [
+        {
+            "address": result.get("display_name", ""),
+            "lat": float(result["lat"]),
+            "lng": float(result["lon"]),
+            "type": result.get("type"),
+        }
+        for result in results
+        if result.get("display_name") and result.get("lat") and result.get("lon")
+    ]
+
+
+@app.get("/api/reverse-geocode")
+async def reverse_geocode(
+    lat: float = Query(ge=-90, le=90),
+    lng: float = Query(ge=-180, le=180),
+) -> dict:
+    """Resolve a map point to a human-readable address."""
+    try:
+        async with httpx.AsyncClient(timeout=nominatim_timeout) as client:
+            response = await client.get(
+                f"{nominatim_base_url}/reverse",
+                params={
+                    "lat": lat,
+                    "lon": lng,
+                    "format": "jsonv2",
+                    "addressdetails": 1,
+                    "zoom": 18,
+                    "accept-language": "ru",
+                },
+                headers={"User-Agent": nominatim_user_agent},
+            )
+            response.raise_for_status()
+            result = response.json()
+    except (httpx.HTTPError, ValueError) as error:
+        raise HTTPException(
+            status_code=503,
+            detail="Сервис определения адреса временно недоступен",
+        ) from error
+
+    address = result.get("display_name")
+    if not address:
+        raise HTTPException(status_code=404, detail="Для этой точки адрес не найден")
+    return {"address": address, "lat": float(result.get("lat", lat)), "lng": float(result.get("lon", lng))}
+
+
 @app.get("/api/restaurants")
 def list_restaurants(session: DbSession) -> list[dict]:
     restaurants = session.scalars(
@@ -317,6 +378,7 @@ def list_restaurants(session: DbSession) -> list[dict]:
             "name": restaurant.name,
             "lat": restaurant.lat,
             "lng": restaurant.lng,
+            "address": restaurant.address,
             "cuisine": restaurant.cuisine,
             "eta": restaurant.eta,
             "menu": [
@@ -358,8 +420,10 @@ async def create_order(body: CreateOrder, session: DbSession) -> dict:
     else:
         if body.items:
             raise HTTPException(status_code=422, detail="Корзина еды неприменима к заказу такси")
+        if taxi_base_fare is None or taxi_price_per_km is None:
+            raise HTTPException(status_code=503, detail="Тариф такси ещё не настроен оператором")
         restaurant_id = None
-        total = TAXI_DEMO_FARE
+        total = round(float(taxi_base_fare) + distance_km(body.start, body.end) * float(taxi_price_per_km))
 
     order = Order(
         id=f"o-{uuid4().hex[:12]}",
