@@ -1,0 +1,45 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='660' viewBox='0 0 1600 660' role='img'><title>6 — Тарифтер мен паркті басқару</title><rect width='1600' height='660' fill='white'/>
+<text x='45' y='64' font-family='Arial, sans-serif' font-size='34' font-weight='normal' text-anchor='start' fill='#23364D'>6.0  Тарифтер мен паркті басқару</text>
+<text x='45' y='107' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='start' fill='#23364D'>Әкімші тарифтер мен техника деректерін өзгертеді</text>
+<text x='45' y='170' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='start' fill='#23364D'>КІРІС: қандай дерек келеді?</text>
+<text x='1185' y='170' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='start' fill='#23364D'>ШЫҒЫС: не жіберіледі?</text>
+<rect x='650' y='205' width='320' height='250' rx='18' fill='#EAF7F6' stroke='#23364D' stroke-width='2'/>
+<text x='810' y='310' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>6.0</text>
+<text x='810' y='338' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Тарифтер мен</text>
+<text x='810' y='366' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>паркті басқару</text>
+<rect x='45' y='220' width='300' height='90' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='195' y='259' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>E3</text>
+<text x='195' y='287' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Әкімші</text>
+<line x1='345' y1='265' x2='650' y2='265' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='265' x2='640' y2='260' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='265' x2='640' y2='270' stroke='#087F8C' stroke-width='2'/>
+<text x='497.5' y='256' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Тариф / парк өзгерістері</text>
+<line x1='45' y1='345' x2='345' y2='345' stroke='#23364D' stroke-width='2'/>
+<line x1='45' y1='435' x2='345' y2='435' stroke='#23364D' stroke-width='2'/>
+<line x1='45' y1='345' x2='45' y2='435' stroke='#23364D' stroke-width='2'/>
+<text x='195' y='384' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>D2</text>
+<text x='195' y='412' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Тарифтер, парк, геозоналар</text>
+<line x1='345' y1='390' x2='650' y2='390' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='390' x2='640' y2='385' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='390' x2='640' y2='395' stroke='#087F8C' stroke-width='2'/>
+<text x='497.5' y='381' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Ағымдағы деректер</text>
+<line x1='1255' y1='220' x2='1555' y2='220' stroke='#23364D' stroke-width='2'/>
+<line x1='1255' y1='310' x2='1555' y2='310' stroke='#23364D' stroke-width='2'/>
+<line x1='1255' y1='220' x2='1255' y2='310' stroke='#23364D' stroke-width='2'/>
+<text x='1405' y='259' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>D2</text>
+<text x='1405' y='287' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Тарифтер, парк, геозоналар</text>
+<line x1='970' y1='265' x2='1255' y2='265' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='265' x2='1245' y2='260' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='265' x2='1245' y2='270' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='256' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Жаңартылған деректер</text>
+<rect x='1255' y='345' width='300' height='90' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='1405' y='384' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>E3</text>
+<text x='1405' y='412' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Әкімші</text>
+<line x1='970' y1='390' x2='1255' y2='390' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='390' x2='1245' y2='385' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='390' x2='1245' y2='395' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='381' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Өзгерту нәтижесі</text>
+<text x='45' y='534' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='start' fill='#23364D'>Бірдей E / D нөмірі — бір объект. Басқа процестермен байланыс олардың нөмірі арқылы көрсетілген.</text>
+<text x='45' y='571' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='start' fill='#23364D'>Бұл — бір DFD моделінің бөліктері. Беттер орындалу уақытын немесе міндетті кезекті белгілемейді.</text>
+<text x='45' y='614' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='start' fill='#23364D'>Қоймаға бағытталған жебе — жазу; қоймадан шыққан жебе — оқу.</text>
+</svg>

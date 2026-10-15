@@ -1,0 +1,72 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='910' viewBox='0 0 1600 910' role='img'><title>4 — Қызметті орындау</title><rect width='1600' height='910' fill='white'/>
+<text x='45' y='64' font-family='Arial, sans-serif' font-size='34' font-weight='normal' text-anchor='start' fill='#23364D'>4.0  Қызметті орындау</text>
+<text x='45' y='107' font-family='Arial, sans-serif' font-size='22' font-weight='normal' text-anchor='start' fill='#23364D'>Мәртебе мен техниканың жауабын бақылау</text>
+<text x='45' y='170' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='start' fill='#23364D'>КІРІС: қандай дерек келеді?</text>
+<text x='1185' y='170' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='start' fill='#23364D'>ШЫҒЫС: не жіберіледі?</text>
+<rect x='650' y='205' width='320' height='500' rx='18' fill='#EAF7F6' stroke='#23364D' stroke-width='2'/>
+<text x='810' y='449' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>4.0</text>
+<text x='810' y='477' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Қызметті орындау</text>
+<rect x='45' y='220' width='300' height='90' rx='18' fill='#EAF7F6' stroke='#23364D' stroke-width='2'/>
+<text x='195' y='259' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>3.0</text>
+<text x='195' y='287' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Бағыт пен ресурсты таңдау</text>
+<line x1='345' y1='265' x2='650' y2='265' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='265' x2='640' y2='260' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='265' x2='640' y2='270' stroke='#087F8C' stroke-width='2'/>
+<text x='497.5' y='256' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Тағайындалған тапсырыс</text>
+<rect x='45' y='345' width='300' height='90' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='195' y='384' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>E2</text>
+<text x='195' y='412' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Жүргізуші / курьер / оператор</text>
+<line x1='345' y1='390' x2='650' y2='390' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='390' x2='640' y2='385' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='390' x2='640' y2='395' stroke='#087F8C' stroke-width='2'/>
+<text x='497.5' y='381' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Мәртебе, координаттар</text>
+<rect x='45' y='470' width='300' height='90' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='195' y='509' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>E5</text>
+<text x='195' y='537' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Құлып эмуляторы</text>
+<line x1='345' y1='515' x2='650' y2='515' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='515' x2='640' y2='510' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='515' x2='640' y2='520' stroke='#087F8C' stroke-width='2'/>
+<text x='497.5' y='506' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Құлып жауабы, телеметрия</text>
+<line x1='45' y1='595' x2='345' y2='595' stroke='#23364D' stroke-width='2'/>
+<line x1='45' y1='685' x2='345' y2='685' stroke='#23364D' stroke-width='2'/>
+<line x1='45' y1='595' x2='45' y2='685' stroke='#23364D' stroke-width='2'/>
+<text x='195' y='634' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>D3</text>
+<text x='195' y='662' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Тапсырыстар, жалдаулар</text>
+<line x1='345' y1='640' x2='650' y2='640' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='640' x2='640' y2='635' stroke='#087F8C' stroke-width='2'/>
+<line x1='650' y1='640' x2='640' y2='645' stroke='#087F8C' stroke-width='2'/>
+<text x='497.5' y='631' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Ағымдағы тапсырыс</text>
+<rect x='1255' y='220' width='300' height='90' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='1405' y='259' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>E2</text>
+<text x='1405' y='287' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Жүргізуші / курьер / оператор</text>
+<line x1='970' y1='265' x2='1255' y2='265' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='265' x2='1245' y2='260' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='265' x2='1245' y2='270' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='256' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Орындау тапсырмасы</text>
+<rect x='1255' y='345' width='300' height='90' rx='0' fill='#F3F6FA' stroke='#23364D' stroke-width='2'/>
+<text x='1405' y='384' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>E5</text>
+<text x='1405' y='412' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Құлып эмуляторы</text>
+<line x1='970' y1='390' x2='1255' y2='390' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='390' x2='1245' y2='385' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='390' x2='1245' y2='395' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='381' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Ашу / жабу командасы</text>
+<line x1='1255' y1='470' x2='1555' y2='470' stroke='#23364D' stroke-width='2'/>
+<line x1='1255' y1='560' x2='1555' y2='560' stroke='#23364D' stroke-width='2'/>
+<line x1='1255' y1='470' x2='1255' y2='560' stroke='#23364D' stroke-width='2'/>
+<text x='1405' y='509' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>D3</text>
+<text x='1405' y='537' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Тапсырыстар, жалдаулар</text>
+<line x1='970' y1='515' x2='1255' y2='515' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='515' x2='1245' y2='510' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='515' x2='1245' y2='520' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='506' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Жаңа мәртебе, орын</text>
+<rect x='1255' y='595' width='300' height='90' rx='18' fill='#EAF7F6' stroke='#23364D' stroke-width='2'/>
+<text x='1405' y='634' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>5.0</text>
+<text x='1405' y='662' font-family='Arial, sans-serif' font-size='20' font-weight='normal' text-anchor='middle' fill='#23364D'>Қызметті аяқтау</text>
+<line x1='970' y1='640' x2='1255' y2='640' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='640' x2='1245' y2='635' stroke='#087F8C' stroke-width='2'/>
+<line x1='1255' y1='640' x2='1245' y2='645' stroke='#087F8C' stroke-width='2'/>
+<text x='1112.5' y='631' font-family='Arial, sans-serif' font-size='17' font-weight='normal' text-anchor='middle' fill='#23364D'>Аяқталу деректері, құн</text>
+<text x='45' y='784' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='start' fill='#23364D'>Бірдей E / D нөмірі — бір объект. Басқа процестермен байланыс олардың нөмірі арқылы көрсетілген.</text>
+<text x='45' y='821' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='start' fill='#23364D'>Бұл — бір DFD моделінің бөліктері. Беттер орындалу уақытын немесе міндетті кезекті белгілемейді.</text>
+<text x='45' y='864' font-family='Arial, sans-serif' font-size='19' font-weight='normal' text-anchor='start' fill='#23364D'>Құлып эмуляторы — самокат / велосипед үшін. Жүргізуші / курьер — такси / жеткізу үшін.</text>
+</svg>
