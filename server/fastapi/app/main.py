@@ -11,10 +11,9 @@ from fastapi import Depends, FastAPI, HTTPException, Query, WebSocket, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, create_engine, inspect, select, text
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, Numeric, String, create_engine, select, text
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship, sessionmaker
-from sqlalchemy.types import JSON
 
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "../../.env"))
@@ -37,74 +36,134 @@ cors_origins = [
 ]
 engine = create_engine(database_url, pool_pre_ping=True)
 SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
-json_type = JSON().with_variant(JSONB, "postgresql")
-
-
 class Base(DeclarativeBase):
     pass
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)
+    email: Mapped[str] = mapped_column(String(320), nullable=False)
+    full_name: Mapped[str] = mapped_column(String(120), nullable=False)
+
+
+class ServiceType(Base):
+    __tablename__ = "service_types"
+
+    code: Mapped[str] = mapped_column(String(20), primary_key=True)
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+
+
+class OrderStatus(Base):
+    __tablename__ = "order_statuses"
+
+    code: Mapped[str] = mapped_column(String(20), primary_key=True)
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+
+
+class Tariff(Base):
+    __tablename__ = "tariffs"
+
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)
+    service_type_code: Mapped[str] = mapped_column(ForeignKey("service_types.code"), nullable=False)
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    base_fare: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    price_per_km: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    price_per_minute: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    valid_from: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    valid_to: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class MenuCategory(Base):
+    __tablename__ = "menu_categories"
+
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+
+
+class Address(Base):
+    __tablename__ = "addresses"
+
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)
+    address_text: Mapped[str] = mapped_column(String(500), nullable=False)
+    lat: Mapped[float] = mapped_column(Float, nullable=False)
+    lng: Mapped[float] = mapped_column(Float, nullable=False)
 
 
 class Restaurant(Base):
     __tablename__ = "restaurants"
 
-    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)
+    owner_user_id: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
-    lat: Mapped[float] = mapped_column(Float, nullable=False)
-    lng: Mapped[float] = mapped_column(Float, nullable=False)
-    address: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    address_id: Mapped[str] = mapped_column(ForeignKey("addresses.id"), nullable=False)
     cuisine: Mapped[str] = mapped_column(String(120), nullable=False)
-    eta: Mapped[int] = mapped_column(Integer, nullable=False, default=25)
-    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    status: Mapped[str] = mapped_column(String(40), nullable=False, default="active")
+    address_ref: Mapped[Address] = relationship()
     menu: Mapped[list["MenuItem"]] = relationship(back_populates="restaurant")
 
 
 class MenuItem(Base):
     __tablename__ = "menu_items"
 
-    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)
     restaurant_id: Mapped[str] = mapped_column(ForeignKey("restaurants.id"), index=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
-    price: Mapped[int] = mapped_column(Integer, nullable=False)
-    category: Mapped[str] = mapped_column(String(80), nullable=False)
+    category_id: Mapped[str] = mapped_column(ForeignKey("menu_categories.id"), nullable=False)
+    description: Mapped[str | None] = mapped_column(String, nullable=True)
+    price: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    category_ref: Mapped[MenuCategory] = relationship()
     restaurant: Mapped[Restaurant] = relationship(back_populates="menu")
 
 
 class Performer(Base):
     __tablename__ = "performers"
 
-    id: Mapped[str] = mapped_column(String(40), primary_key=True)
-    name: Mapped[str] = mapped_column(String(120), nullable=False)
-    role: Mapped[str] = mapped_column(String(20), nullable=False)
-    lat: Mapped[float] = mapped_column(Float, nullable=False)
-    lng: Mapped[float] = mapped_column(Float, nullable=False)
-    status: Mapped[str] = mapped_column(String(20), nullable=False, default="available")
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
+    address_id: Mapped[str | None] = mapped_column(ForeignKey("addresses.id"), nullable=True)
+    kind: Mapped[str] = mapped_column("type", String(20), nullable=False)
+    status: Mapped[str] = mapped_column(String(40), nullable=False, default="available")
+    user: Mapped[User] = relationship()
+    address_ref: Mapped[Address | None] = relationship()
 
 
 class Order(Base):
     __tablename__ = "orders"
 
-    id: Mapped[str] = mapped_column(String(40), primary_key=True)
-    customer: Mapped[str] = mapped_column(String(120), nullable=False)
-    type: Mapped[str] = mapped_column(String(20), nullable=False)
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)
+    customer_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
+    service_type_code: Mapped[str] = mapped_column(ForeignKey("service_types.code"), nullable=False)
     restaurant_id: Mapped[str | None] = mapped_column(ForeignKey("restaurants.id"), nullable=True)
-    status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
-    total: Mapped[int] = mapped_column(Integer, nullable=False)
-    start: Mapped[dict[str, float]] = mapped_column(json_type, nullable=False)
-    end: Mapped[dict[str, float]] = mapped_column(json_type, nullable=False)
-    courier_id: Mapped[str | None] = mapped_column(ForeignKey("performers.id"), nullable=True)
+    status_code: Mapped[str] = mapped_column(ForeignKey("order_statuses.code"), nullable=False)
+    tariff_id: Mapped[str] = mapped_column(ForeignKey("tariffs.id"), nullable=False)
+    pickup_address_id: Mapped[str] = mapped_column(ForeignKey("addresses.id"), nullable=False)
+    dropoff_address_id: Mapped[str] = mapped_column(ForeignKey("addresses.id"), nullable=False)
+    performer_id: Mapped[str | None] = mapped_column(ForeignKey("performers.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    customer_ref: Mapped[User] = relationship(foreign_keys=[customer_id])
+    service_type: Mapped[ServiceType] = relationship()
+    status_ref: Mapped[OrderStatus] = relationship()
+    tariff: Mapped[Tariff] = relationship()
+    pickup_address: Mapped[Address] = relationship(foreign_keys=[pickup_address_id])
+    dropoff_address: Mapped[Address] = relationship(foreign_keys=[dropoff_address_id])
     items: Mapped[list["OrderItem"]] = relationship(back_populates="order", cascade="all, delete-orphan")
 
 
 class OrderItem(Base):
     __tablename__ = "order_items"
 
-    id: Mapped[str] = mapped_column(String(40), primary_key=True, default=lambda: str(uuid4()))
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid4()))
     order_id: Mapped[str] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"), index=True)
     menu_item_id: Mapped[str] = mapped_column(ForeignKey("menu_items.id"), nullable=False)
-    name: Mapped[str] = mapped_column(String(120), nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-    unit_price: Mapped[int] = mapped_column(Integer, nullable=False)
+    unit_price: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    item_name_snapshot: Mapped[str] = mapped_column(String(160), nullable=False)
+    menu_item: Mapped[MenuItem] = relationship()
     order: Mapped[Order] = relationship(back_populates="items")
 
 
@@ -149,12 +208,6 @@ def ensure_schema() -> None:
         with engine.begin() as connection:
             connection.execute(text(migration.read()))
     Base.metadata.create_all(engine)
-    inspector = inspect(engine)
-    if "restaurants" in inspector.get_table_names() and "address" not in {
-        column["name"] for column in inspector.get_columns("restaurants")
-    }:
-        with engine.begin() as connection:
-            connection.execute(text("ALTER TABLE restaurants ADD COLUMN address VARCHAR(500)"))
 
 
 @asynccontextmanager
@@ -206,21 +259,27 @@ events = EventHub()
 
 
 def order_payload(order: Order) -> dict:
+    total = sum(item.quantity * float(item.unit_price) for item in order.items)
+    if not order.items:
+        total = float(order.tariff.base_fare) + distance_km(
+            Coordinates(lat=order.pickup_address.lat, lng=order.pickup_address.lng),
+            Coordinates(lat=order.dropoff_address.lat, lng=order.dropoff_address.lng),
+        ) * float(order.tariff.price_per_km)
     return {
         "id": order.id,
-        "customer": order.customer,
-        "type": order.type,
+        "customer": order.customer_ref.full_name,
+        "type": order.service_type_code,
         "restaurantId": order.restaurant_id,
-        "status": order.status,
-        "total": order.total,
-        "start": order.start,
-        "end": order.end,
-        "courierId": order.courier_id,
+        "status": order.status_code,
+        "total": round(total),
+        "start": {"address": order.pickup_address.address_text, "lat": order.pickup_address.lat, "lng": order.pickup_address.lng},
+        "end": {"address": order.dropoff_address.address_text, "lat": order.dropoff_address.lat, "lng": order.dropoff_address.lng},
+        "courierId": order.performer_id,
         "createdAt": order.created_at.isoformat(),
         "items": [
             {
                 "id": item.menu_item_id,
-                "name": item.name,
+                "name": item.item_name_snapshot,
                 "quantity": item.quantity,
                 "unitPrice": item.unit_price,
             }
@@ -374,19 +433,19 @@ async def reverse_geocode(
 @app.get("/api/restaurants")
 def list_restaurants(session: DbSession) -> list[dict]:
     restaurants = session.scalars(
-        select(Restaurant).where(Restaurant.active.is_(True)).order_by(Restaurant.name)
+        select(Restaurant).where(Restaurant.status == "active").order_by(Restaurant.name)
     ).all()
     return [
         {
             "id": restaurant.id,
             "name": restaurant.name,
-            "lat": restaurant.lat,
-            "lng": restaurant.lng,
-            "address": restaurant.address,
+            "lat": restaurant.address_ref.lat,
+            "lng": restaurant.address_ref.lng,
+            "address": restaurant.address_ref.address_text,
             "cuisine": restaurant.cuisine,
-            "eta": restaurant.eta,
+            "eta": 25,
             "menu": [
-                {"id": item.id, "name": item.name, "price": item.price, "category": item.category}
+                {"id": item.id, "name": item.name, "price": item.price, "category": item.category_ref.name}
                 for item in restaurant.menu
             ],
         }
@@ -415,29 +474,45 @@ async def create_order(body: CreateOrder, session: DbSession) -> dict:
             order_items.append(
                 OrderItem(
                     menu_item_id=menu_item.id,
-                    name=menu_item.name,
                     quantity=line.quantity,
                     unit_price=menu_item.price,
+                    item_name_snapshot=menu_item.name,
                 )
             )
         total = sum(item.quantity * item.unit_price for item in order_items)
     else:
         if body.items:
             raise HTTPException(status_code=422, detail="Корзина еды неприменима к заказу такси")
-        if taxi_base_fare is None or taxi_price_per_km is None:
-            raise HTTPException(status_code=503, detail="Тариф такси ещё не настроен оператором")
         restaurant_id = None
-        total = round(float(taxi_base_fare) + distance_km(body.start, body.end) * float(taxi_price_per_km))
 
+    customer = User(
+        id=str(uuid4()),
+        email=f"{uuid4()}@anonymous.yago",
+        full_name=body.customer.strip(),
+    )
+    start_address = Address(
+        id=str(uuid4()), address_text=body.start.address,
+        lat=body.start.lat, lng=body.start.lng,
+    )
+    end_address = Address(
+        id=str(uuid4()), address_text=body.end.address,
+        lat=body.end.lat, lng=body.end.lng,
+    )
+    service_type = session.get(ServiceType, body.type)
+    tariff = session.scalar(
+        select(Tariff).where(Tariff.service_type_code == body.type, Tariff.valid_to.is_(None))
+    )
+    if service_type is None or tariff is None:
+        raise HTTPException(status_code=503, detail="Тариф услуги ещё не настроен оператором")
     order = Order(
         id=str(uuid4()),
-        customer=body.customer.strip(),
-        type=body.type,
+        customer_ref=customer,
+        service_type=service_type,
         restaurant_id=restaurant_id,
-        status="pending",
-        total=total,
-        start=body.start.model_dump(),
-        end=body.end.model_dump(),
+        status_code="pending",
+        tariff_id=tariff.id,
+        pickup_address=start_address,
+        dropoff_address=end_address,
         created_at=datetime.now(timezone.utc),
         items=order_items,
     )
@@ -459,26 +534,26 @@ async def update_order_status(order_id: str, body: StatusUpdate, session: DbSess
         "assigned": {"in_progress", "cancelled"},
         "in_progress": {"completed"},
     }
-    if body.status not in allowed.get(order.status, set()):
+    if body.status not in allowed.get(order.status_code, set()):
         raise HTTPException(status_code=409, detail="Недопустимый переход статуса заказа")
 
     if body.status == "assigned":
-        performer_role = "driver" if order.type == "taxi" else "courier"
+        performer_role = "driver" if order.service_type_code == "taxi" else "courier"
         performer = session.scalar(
             select(Performer)
-            .where(Performer.role == performer_role, Performer.status == "available")
+            .where(Performer.kind == performer_role, Performer.status == "available")
             .order_by(Performer.id)
             .with_for_update(skip_locked=True)
         )
         if performer is None:
             raise HTTPException(status_code=409, detail="Нет свободного исполнителя для этого заказа")
         performer.status = "busy"
-        order.courier_id = performer.id
+        order.performer_id = performer.id
 
-    order.status = body.status
-    if body.status in {"completed", "cancelled"} and order.courier_id:
+    order.status_code = body.status
+    if body.status in {"completed", "cancelled"} and order.performer_id:
         performer = session.scalar(
-            select(Performer).where(Performer.id == order.courier_id).with_for_update()
+            select(Performer).where(Performer.id == order.performer_id).with_for_update()
         )
         if performer is not None:
             performer.status = "available"
@@ -494,10 +569,10 @@ def list_performers(session: DbSession) -> list[dict]:
     return [
         {
             "id": person.id,
-            "name": person.name,
-            "role": person.role,
-            "lat": person.lat,
-            "lng": person.lng,
+            "name": person.user.full_name,
+            "role": person.kind,
+            "lat": person.address_ref.lat if person.address_ref else None,
+            "lng": person.address_ref.lng if person.address_ref else None,
             "status": person.status,
         }
         for person in session.scalars(select(Performer).order_by(Performer.id)).all()
@@ -509,15 +584,18 @@ async def update_position(performer_id: str, position: Coordinates, session: DbS
     performer = session.get(Performer, performer_id)
     if performer is None:
         raise HTTPException(status_code=404, detail="Исполнитель не найден")
-    performer.lat = position.lat
-    performer.lng = position.lng
+    if performer.address_ref is None:
+        performer.address_ref = Address(id=str(uuid4()), address_text="Текущая позиция", lat=position.lat, lng=position.lng)
+    else:
+        performer.address_ref.lat = position.lat
+        performer.address_ref.lng = position.lng
     session.commit()
     result = {
         "id": performer.id,
-        "name": performer.name,
-        "role": performer.role,
-        "lat": performer.lat,
-        "lng": performer.lng,
+        "name": performer.user.full_name,
+        "role": performer.kind,
+        "lat": position.lat,
+        "lng": position.lng,
         "status": performer.status,
     }
     await events.publish("driverMoved", result)

@@ -1,10 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, CircleMarker } from 'react-leaflet';
 import L from 'leaflet';
+import markerIconUrl from 'leaflet/dist/images/marker-icon.png';
+import markerShadowUrl from 'leaflet/dist/images/marker-shadow.png';
+
+const mapTilesUrl = import.meta.env.VITE_MAP_TILES_URL
+  || 'https://tile.openstreetmap.de/{z}/{x}/{y}.png';
 
 const defaultIcon = L.icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconUrl: markerIconUrl,
+  shadowUrl: markerShadowUrl,
   iconSize: [25, 41],
   iconAnchor: [12, 41]
 });
@@ -268,7 +273,7 @@ function App() {
     }
   };
 
-  const mapCenter = config?.mapCenter ? [config.mapCenter.lat, config.mapCenter.lng] : [0, 0];
+  const mapCenter = config?.mapCenter ? [config.mapCenter.lat, config.mapCenter.lng] : [51.1694, 71.4491];
   const hasValidLocations = [form.startLat, form.startLng, form.endLat, form.endLng]
     .every(value => value !== '' && Number.isFinite(Number(value)));
 
@@ -423,8 +428,8 @@ function App() {
         <div className="map-card">
           <MapContainer center={mapCenter} zoom={13} scrollWheelZoom className="map-root">
             <TileLayer
-              attribution='&copy; OpenStreetMap contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url={mapTilesUrl}
             />
 
             {restaurants.map((restaurant) => (
