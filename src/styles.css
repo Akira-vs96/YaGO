@@ -58,13 +58,19 @@ h2 { font-size: 1.05rem; letter-spacing: -.015em }
 .address-results { display: grid; gap: 3px; padding: 4px; border: 1px solid var(--line); border-radius: 10px; max-height: 180px; overflow: auto }
 .address-results button { border: 0; background: #f4f8f0; text-align: left; padding: 9px; border-radius: 6px; font-size: .75rem }
 .address-results button:hover { background: var(--accent) }
-.map-target { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; font-size: .75rem }
-.map-target .button { min-height: 35px; padding: 7px 8px }
+.map-controls { display: grid; justify-items: end; gap: 5px }
+.map-target { display: flex; gap: 6px; flex-wrap: wrap }
+.map-target button { min-height: 38px; padding: 7px 12px; border: 1px solid #bdcbb7; border-radius: 10px; background: #fff; color: #36502c; font-size: .8rem; font-weight: 800 }
+.map-target button[aria-pressed='true'] { background: var(--accent); border-color: #95c44e; color: var(--accent-ink) }
+.map-target button:hover { border-color: #6b9d3d }
 .map-stage { padding: 20px; display: flex; flex-direction: column; min-width: 0; min-height: 0 }
-.map-heading { display: flex; justify-content: space-between; align-items: end; gap: 12px; padding: 4px 4px 16px }
+.map-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 4px 4px 16px }
 .map-heading h2 { font-size: 1.35rem; margin: 0 }
-.map-hint { color: var(--muted); font-size: .76rem }
+.map-hint { color: var(--muted); font-size: .76rem; margin: 0; text-align: right }
 .map { width: 100%; flex: 1; min-height: 480px; border-radius: 18px; border: 1px solid var(--line); z-index: 0 }
+.route-pin span { width: 32px; height: 32px; display: grid; place-items: center; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 2px 8px #17291b70; font-size: .8rem; font-weight: 800 }
+.route-pin-start span { background: #287443; color: #fff }
+.route-pin-end span { background: #315fa2; color: #fff }
 .map-footer { font-size: .68rem; color: var(--muted); padding: 10px 4px }
 .restaurant-option, .vehicle { width: 100%; display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; margin-top: 7px }
 .restaurant-option span, .vehicle span { color: var(--muted); font-size: .75rem; line-height: 1.4 }
@@ -132,7 +138,9 @@ h2 { font-size: 1.05rem; letter-spacing: -.015em }
   .service-panel { max-height: none; overflow: visible; padding: 20px 18px 80px; border-right: 0 }
   .map-stage { padding: 10px 14px }
   .map { flex: none; height: 42dvh; min-height: 270px }
-  .map-heading { padding-bottom: 8px }
+  .map-heading { padding-bottom: 8px; flex-wrap: wrap }
+  .map-controls { justify-items: start }
+  .map-hint { text-align: left }
   .history-grid, .office-grid { grid-template-columns: 1fr }
   .auth-page { grid-template-columns: 1fr }
   .auth-brand { padding: 24px; min-height: 180px }
@@ -140,7 +148,6 @@ h2 { font-size: 1.05rem; letter-spacing: -.015em }
   .auth-brand p { margin: 0 }
 }
 @media (max-width: 440px) {
-  .map-hint { display: none }
   .page { padding: 22px 14px 60px }
   .history-item, .office-order { align-items: flex-start; flex-direction: column }
   .history-item > div:last-child { justify-items: start }
