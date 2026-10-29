@@ -37,6 +37,7 @@ erDiagram
 | `orders.customer_id`, `service_type_code`, `tariff_id` | Владелец, услуга и применённая версия тарифа |
 | `orders.pickup_snapshot`, `dropoff_snapshot` | Адресные строки на момент оформления |
 | `orders.pickup_lat_snapshot`, `pickup_lng_snapshot`, `dropoff_lat_snapshot`, `dropoff_lng_snapshot` | Географические точки на момент оформления |
+| `orders.route_geometry` | Линия маршрута OSRM на момент оформления; сохраняется для карты после перезагрузки |
 | `orders.restaurant_name_snapshot` | Название заведения при покупке |
 | `orders.delivery_amount`, `discount_amount`, `total_amount` | Компоненты серверного расчёта в тенге |
 | `order_items.item_name_snapshot`, `unit_price`, `quantity` | Купленное блюдо, цена и количество, независимо от действующего меню |

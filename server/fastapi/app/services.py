@@ -905,6 +905,16 @@ def admin_audit(user: User, db: DB, limit: int = Query(50, ge=1, le=100), offset
                       limit=limit, offset=offset)]
 
 
+@router.get("/admin/login-events")
+def admin_login_events(user: User, db: DB, limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0)):
+    require(user, "admin")
+    return many(db, """SELECT e.action,e.created_at,u.email actor_email,e.subject_id email_hash
+        FROM audit_events e LEFT JOIN users u ON u.id=e.actor_id
+        WHERE e.action IN ('login','login_failed','login_rate_limited',
+            'login_2fa','login_2fa_failed','login_2fa_expired')
+        ORDER BY e.id DESC LIMIT :limit OFFSET :offset""", limit=limit, offset=offset)
+
+
 @router.get("/admin/analytics")
 def analytics(user: User, db: DB, from_at: datetime | None = None, to_at: datetime | None = None):
     require(user, "admin")

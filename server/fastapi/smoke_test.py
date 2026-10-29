@@ -62,10 +62,33 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
                   {"email": "courier@demo.yago.test", "password": "YaGo-demo-2026!"}), 200)
     check(request(admin, "POST", "/api/auth/login",
                   {"email": "admin@demo.yago.test", "password": "YaGo-demo-2026!"}), 200)
+    assert request(other, "POST", "/api/auth/login",
+                   {"email": "other-nonexistent@test.yago.local", "password": password}).status_code == 401
+    assert any(event["action"] == "login_failed" for event in
+               check(request(admin, "GET", "/api/admin/audit"), 200))
+    assert any(event["action"] == "login_failed" for event in
+               check(request(admin, "GET", "/api/admin/login-events"), 200))
+    assert request(customer, "GET", "/api/admin/login-events").status_code == 403
     assert request(customer, "PATCH", "/api/profile", {"fullName": "Новый клиент"}).status_code == 200
     assert customer.patch("/api/profile", json={"fullName": "Без CSRF"}).status_code == 403
     assert request(customer, "PATCH", "/api/admin/users/00000000-0000-0000-0000-000000000000/role",
                    {"role": "admin", "enabled": True}).status_code == 403
+    with SessionLocal.begin() as db:
+        demo_driver = db.scalar(text("""SELECT p.id FROM performers p JOIN users u ON u.id=p.user_id
+            WHERE u.email='driver@demo.yago.test'"""))
+        near = db.scalar(text("""INSERT INTO addresses(address_text,lat,lng)
+            VALUES ('Точка рядом',51.128,71.421) RETURNING id"""))
+        db.execute(text("UPDATE performers SET address_id=:address,status='available' WHERE id=:id"),
+                   {"address": near, "id": demo_driver})
+        far_user = db.scalar(text("""INSERT INTO users(email,full_name)
+            VALUES (:email,'Дальний водитель') RETURNING id"""),
+            {"email": f"far-driver-{suffix}@test.yago.local"})
+        far = db.scalar(text("""INSERT INTO addresses(address_text,lat,lng)
+            VALUES ('Дальняя точка',51.300,71.600) RETURNING id"""))
+        far_id = f"00000000-0000-0000-0000-{suffix.zfill(12)}"
+        db.execute(text("""INSERT INTO performers(id,user_id,address_id,type,status)
+            VALUES (:id,:user,:address,'driver','available')"""),
+            {"id": far_id, "user": far_user, "address": far})
     assert request(customer, "POST", "/api/auth/student/verify", {"code": "wrong"}).status_code == 422
     check(request(customer, "POST", "/api/auth/student/verify", {"code": "YAGO-STUDENT"}), 200)
 
@@ -78,12 +101,15 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
     key = str(uuid4())
     assert request(customer, "POST", "/api/orders", {**order_data, "quotedTotal": "1"}, key).status_code == 409
     order = check(request(customer, "POST", "/api/orders", order_data, key), 201)
+    assert order["routeGeometry"]["coordinates"] == [[point_a["lng"], point_a["lat"]],
+                                                   [point_b["lng"], point_b["lat"]]]
     assert check(request(customer, "POST", "/api/orders", order_data, key), 201)["id"] == order["id"]
     assert request(customer, "POST", "/api/orders", {**order_data, "end": point_a}, key).status_code == 409
     assert request(other, "GET", f"/api/orders/{order['id']}").status_code == 404
     assert request(other, "PATCH", f"/api/orders/{order['id']}/status", {"status": "cancelled"}).status_code == 409
     assert request(customer, "PATCH", f"/api/orders/{order['id']}/status", {"status": "completed"}).status_code == 409
-    check(request(operator, "PATCH", f"/api/orders/{order['id']}/status", {"status": "assigned"}), 200)
+    assigned = check(request(operator, "PATCH", f"/api/orders/{order['id']}/status", {"status": "assigned"}), 200)
+    assert assigned["performerId"] == str(demo_driver)
     for state in ("accepted", "arriving", "in_progress", "completed"):
         check(request(driver, "PATCH", f"/api/orders/{order['id']}/status", {"status": state}), 200)
         if state == "accepted":
@@ -154,11 +180,27 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
     assert request(other, "POST", "/api/scooters/reserve", {"scooterId": scooter["id"]}, str(uuid4())).status_code == 409
     qr = check(request(customer, "GET", f"/api/reservations/{reservation['id']}/demo-qr"), 200)["qrCode"]
     rental = check(request(customer, "POST", f"/api/reservations/{reservation['id']}/start", {"qrCode": qr}), 200)
+    old_rate = rental["tariff"]
+    new_rate = check(request(operator, "POST", "/api/operator/tariffs",
+        {"service": "scooter", "name": f"Новая версия {suffix}", "baseFare": "999",
+         "pricePerKm": "0", "pricePerMinute": "999"}), 201)
     assert check(request(customer, "POST", f"/api/reservations/{reservation['id']}/start", {"qrCode": qr}), 200)["id"] == rental["id"]
     assert request(other, "POST", f"/api/rentals/{rental['id']}/finish", point_a).status_code == 404
-    assert request(customer, "POST", f"/api/rentals/{rental['id']}/finish", {"lat": 51.2, "lng": 71.5}).status_code == 409
+    assert request(customer, "POST", f"/api/rentals/{rental['id']}/finish", {"lat": 50.0, "lng": 70.0}).status_code == 409
     finished = check(request(customer, "POST", f"/api/rentals/{rental['id']}/finish", point_a), 200)
     assert finished["status"] == "completed"
+    expected_total = Decimal(old_rate["baseFare"]) + Decimal(old_rate["pricePerMinute"])
+    assert Decimal(finished["total"]) == expected_total
+    assert finished["tariff"]["id"] == old_rate["id"]
+    assert request(customer, "DELETE", f"/api/operator/tariffs/{new_rate['id']}").status_code == 403
+    check(request(operator, "PATCH", f"/api/operator/tariffs/{new_rate['id']}",
+        {"service": "scooter", "name": f"Исправленная версия {suffix}", "baseFare": "998",
+         "pricePerKm": "0", "pricePerMinute": "998"}), 200)
+    assert any(t["id"] == new_rate["id"] for t in check(request(operator, "GET", "/api/operator/tariffs"), 200))
+    check(request(operator, "DELETE", f"/api/operator/tariffs/{new_rate['id']}"), 200)
+    assert request(operator, "PATCH", f"/api/operator/tariffs/{old_rate['id']}",
+        {"service": "scooter", "name": "Нельзя менять", "baseFare": "1",
+         "pricePerKm": "0", "pricePerMinute": "1"}).status_code == 409
     assert check(request(customer, "POST", f"/api/rentals/{rental['id']}/finish", point_a), 200)["total"] == finished["total"]
     with ThreadPoolExecutor(max_workers=2) as pool:
         races = list(pool.map(lambda args: request(args[0], "POST", "/api/scooters/reserve",
@@ -191,7 +233,13 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
                          {"name": zone_name, "south": 51.10, "north": 51.11,
                           "west": 71.40, "east": 71.41}), 201)
     assert any(z["id"] == zone["id"] for z in check(request(operator, "GET", "/api/operator/zones"), 200))
-    check(request(operator, "PATCH", f"/api/operator/zones/{zone['id']}/status", {"active": False}), 200)
+    check(request(operator, "PATCH", f"/api/operator/zones/{zone['id']}",
+        {"name": f"Исправленная зона {suffix}", "south": 51.10, "north": 51.11,
+         "west": 71.40, "east": 71.41, "active": False}), 200)
+    assert any(z["name"] == f"Исправленная зона {suffix}" for z in
+               check(request(operator, "GET", "/api/operator/zones"), 200))
+    assert request(customer, "DELETE", f"/api/operator/zones/{zone['id']}").status_code == 403
+    check(request(operator, "DELETE", f"/api/operator/zones/{zone['id']}"), 200)
     restaurant = check(request(operator, "POST", "/api/operator/restaurants",
                                {"name": f"Тестовое кафе {suffix}", "cuisine": "Учебная", "address": point_a}), 201)
     check(request(operator, "PATCH", f"/api/operator/restaurants/{restaurant['id']}/status",
