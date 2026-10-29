@@ -1,0 +1,5 @@
+# Replace the hostname and route public HTTPS traffic to the local frontend.
+# Caddy provisions TLS and forwards WebSocket upgrades automatically.
+yago.example.org {
+    reverse_proxy localhost:8088
+}
