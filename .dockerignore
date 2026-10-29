@@ -1,0 +1,9 @@
+.git
+node_modules
+src/node_modules
+src/dist
+server/fastapi/.venv
+server/.env
+**/__pycache__
+docs
+п-4

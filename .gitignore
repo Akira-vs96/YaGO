@@ -11,3 +11,4 @@ server/.env
 server/dist
 src/dist
 npm-debug.log*
+.backups/

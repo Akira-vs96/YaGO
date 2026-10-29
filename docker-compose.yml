@@ -1,12 +1,14 @@
+name: yago-study
+
 services:
   db:
-    image: postgres:16-alpine
+    image: postgis/postgis:16-3.5
     environment:
       POSTGRES_DB: yago
       POSTGRES_USER: yago
-      POSTGRES_PASSWORD: yago
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-yago-local-only}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:${YAGO_DB_PORT:-55433}:5432"
     volumes:
       - yago-postgres:/var/lib/postgresql/data
     healthcheck:
@@ -14,6 +16,39 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+  api:
+    build: ./server/fastapi
+    environment:
+      DATABASE_URL: postgresql+psycopg://yago:${POSTGRES_PASSWORD:-yago-local-only}@db:5432/yago
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:8088,http://127.0.0.1:8088}
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+      DEMO_MODE: ${DEMO_MODE:-1}
+      BACKUP_CONFIRMED: ${BACKUP_CONFIRMED:-0}
+      NOMINATIM_USER_AGENT: ${NOMINATIM_USER_AGENT:-YaGo educational local demo}
+    ports:
+      - "127.0.0.1:${YAGO_API_PORT:-8008}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  frontend:
+    build:
+      context: .
+      dockerfile: src/Dockerfile
+    ports:
+      - "127.0.0.1:${YAGO_WEB_PORT:-8088}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   yago-postgres:
