@@ -148,8 +148,10 @@ def seed():
             db.execute(text("""INSERT INTO scooters(code,qr_code,lat,lng,battery_percent)
                 VALUES (:code,:qr,:lat,:lng,:battery) ON CONFLICT (code) DO NOTHING"""),
                 {"code": code, "qr": f"YAGO-DEMO-{code}", "lat": lat, "lng": lng, "battery": battery})
-        db.execute(text("""INSERT INTO parking_zones(name,boundary)
-            VALUES ('Центр Астаны',ST_MakeEnvelope(71.39,51.10,71.47,51.16,4326))
+        db.execute(text("""INSERT INTO parking_zones(name,boundary,kind)
+            VALUES ('Зона обслуживания Астаны',ST_MakeEnvelope(71.37,51.08,71.49,51.18,4326),'service'),
+                   ('Центр Астаны',ST_MakeEnvelope(71.39,51.10,71.47,51.16,4326),'parking'),
+                   ('Демо-зона запрета',ST_MakeEnvelope(71.44,51.13,71.45,51.14,4326),'no_parking')
             ON CONFLICT (name) DO NOTHING"""))
         seed_example_operations(db)
 

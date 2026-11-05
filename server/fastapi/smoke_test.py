@@ -178,15 +178,39 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
     reservation = check(request(customer, "POST", "/api/scooters/reserve",
                                 {"scooterId": scooter["id"]}, str(uuid4())), 201)
     assert request(other, "POST", "/api/scooters/reserve", {"scooterId": scooter["id"]}, str(uuid4())).status_code == 409
+    booked_rate = check(request(customer, "GET", "/api/reservations"), 200)[0]["tariff"]
+    assert request(other, "GET", f"/api/reservations/{reservation['id']}/demo-qr").status_code == 404
     qr = check(request(customer, "GET", f"/api/reservations/{reservation['id']}/demo-qr"), 200)["qrCode"]
-    rental = check(request(customer, "POST", f"/api/reservations/{reservation['id']}/start", {"qrCode": qr}), 200)
-    old_rate = rental["tariff"]
+    assert qr.startswith("yago:demo:")
+    assert request(customer, "POST", f"/api/reservations/{reservation['id']}/start",
+                   {"qrCode": f"yago:demo:{uuid4()}"}).status_code == 422
     new_rate = check(request(operator, "POST", "/api/operator/tariffs",
         {"service": "scooter", "name": f"Новая версия {suffix}", "baseFare": "999",
          "pricePerKm": "0", "pricePerMinute": "999"}), 201)
+    assert request(operator, "DELETE", f"/api/operator/tariffs/{booked_rate['id']}").status_code == 409
+    rental = check(request(customer, "POST", f"/api/reservations/{reservation['id']}/start", {"qrCode": qr}), 200)
+    old_rate = rental["tariff"]
+    assert old_rate == booked_rate
     assert check(request(customer, "POST", f"/api/reservations/{reservation['id']}/start", {"qrCode": qr}), 200)["id"] == rental["id"]
     assert request(other, "POST", f"/api/rentals/{rental['id']}/finish", point_a).status_code == 404
     assert request(customer, "POST", f"/api/rentals/{rental['id']}/finish", {"lat": 50.0, "lng": 70.0}).status_code == 409
+    assert request(customer, "POST", f"/api/rentals/{rental['id']}/finish",
+                   {"lat": 51.09, "lng": 71.42}).status_code == 409
+    outside = check(request(operator, "POST", "/api/operator/zones",
+        {"name": f"Парковка вне зоны {suffix}", "kind": "parking",
+         "south": 50.0, "north": 50.01, "west": 70.0, "east": 70.01}), 201)
+    assert request(customer, "POST", f"/api/rentals/{rental['id']}/finish",
+                   {"lat": 50.005, "lng": 70.005}).status_code == 409
+    check(request(operator, "PATCH", f"/api/operator/zones/{outside['id']}/status", {"active": False}), 200)
+    check(request(operator, "DELETE", f"/api/operator/zones/{outside['id']}"), 200)
+    restricted = check(request(operator, "POST", "/api/operator/zones",
+        {"name": f"Запрет {suffix}", "kind": "no_parking", "south": point_b["lat"],
+         "north": 51.14, "west": 71.43, "east": 71.44}), 201)
+    denied = check(request(customer, "POST", f"/api/rentals/{rental['id']}/finish", point_b), 409)
+    assert "запрещена" in denied["detail"]
+    check(request(operator, "PATCH", f"/api/operator/zones/{restricted['id']}/status", {"active": False}), 200)
+    check(request(operator, "DELETE", f"/api/operator/zones/{restricted['id']}"), 200)
+    assert check(request(customer, "GET", "/api/rentals"), 200)[0]["status"] == "active"
     finished = check(request(customer, "POST", f"/api/rentals/{rental['id']}/finish", point_a), 200)
     assert finished["status"] == "completed"
     expected_total = Decimal(old_rate["baseFare"]) + Decimal(old_rate["pricePerMinute"])

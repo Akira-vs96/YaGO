@@ -41,9 +41,10 @@ def audit(db, actor, action, subject_type=None, subject_id=None):
         {"actor": actor, "action": action, "kind": subject_type, "id": str(subject_id) if subject_id else None})
 
 
-def active_tariff(db, service):
-    tariff = one(db, """SELECT * FROM tariffs WHERE service_type_code=:service AND valid_from<=now()
-        AND (valid_to IS NULL OR valid_to>now()) ORDER BY valid_from DESC,id DESC LIMIT 1""", service=service)
+def active_tariff(db, service, *, lock=False):
+    sql = """SELECT * FROM tariffs WHERE service_type_code=:service AND valid_from<=now()
+        AND (valid_to IS NULL OR valid_to>now()) ORDER BY valid_from DESC,id DESC LIMIT 1"""
+    tariff = one(db, sql + (" FOR SHARE" if lock else ""), service=service)
     if not tariff:
         raise HTTPException(503, "Действующий тариф не найден")
     return tariff
@@ -402,8 +403,9 @@ def scooters(db: DB, user: User):
 
 @router.get("/zones")
 def zones(db: DB):
-    return [{"id": str(r["id"]), "name": r["name"], "geometry": json.loads(r["geometry"])}
-        for r in many(db, "SELECT id,name,ST_AsGeoJSON(boundary) geometry FROM parking_zones WHERE active ORDER BY name")]
+    return [{"id": str(r["id"]), "name": r["name"], "kind": r["kind"], "geometry": json.loads(r["geometry"])}
+        for r in many(db, """SELECT id,name,kind,ST_AsGeoJSON(boundary) geometry
+            FROM parking_zones WHERE active ORDER BY CASE kind WHEN 'service' THEN 0 WHEN 'parking' THEN 1 ELSE 2 END,name""")]
 
 
 def rental_view(db, rental_id):
@@ -462,10 +464,13 @@ def reserve(body: ReserveInput, user: User, db: DB,
     if one(db, "SELECT 1 FROM scooter_reservations WHERE customer_id=:user AND status='active'", user=user["id"]) or \
        one(db, "SELECT 1 FROM scooter_rentals WHERE customer_id=:user AND status='active'", user=user["id"]):
         raise HTTPException(409, "У вас уже есть бронь или аренда")
+    tariff = active_tariff(db, "scooter", lock=True)
     expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
-    reservation_id = db.execute(text("""INSERT INTO scooter_reservations(scooter_id,customer_id,expires_at,idempotency_key)
-        VALUES (:scooter,:user,:expiry,:key) RETURNING id"""),
-        {"scooter": body.scooterId, "user": user["id"], "expiry": expiry, "key": idempotency_key}).scalar_one()
+    reservation_id = db.execute(text("""INSERT INTO scooter_reservations(
+        scooter_id,customer_id,expires_at,idempotency_key,tariff_id)
+        VALUES (:scooter,:user,:expiry,:key,:tariff) RETURNING id"""),
+        {"scooter": body.scooterId, "user": user["id"], "expiry": expiry, "key": idempotency_key,
+         "tariff": tariff["id"]}).scalar_one()
     db.execute(text("UPDATE scooters SET status='reserved' WHERE id=:id"), {"id": body.scooterId})
     audit(db, user["id"], "scooter_reserve", "reservation", reservation_id)
     db.commit()
@@ -477,21 +482,29 @@ def reservations(user: User, db: DB):
     release_expired(db)
     db.commit()
     return [{"id": str(r["id"]), "scooterId": str(r["scooter_id"]), "status": r["status"],
-             "expiresAt": r["expires_at"], "code": r["code"]} for r in many(db, """
-        SELECT r.*,s.code FROM scooter_reservations r JOIN scooters s ON s.id=r.scooter_id
+             "expiresAt": r["expires_at"], "code": r["code"],
+             "tariff": {"id": str(r["tariff_id"]), "name": r["tariff_name"],
+                        "baseFare": str(r["base_fare"]), "pricePerMinute": str(r["price_per_minute"])}
+                       if r["tariff_id"] else None} for r in many(db, """
+        SELECT r.*,s.code,t.name tariff_name,t.base_fare,t.price_per_minute
+        FROM scooter_reservations r JOIN scooters s ON s.id=r.scooter_id
+        LEFT JOIN tariffs t ON t.id=r.tariff_id
         WHERE r.customer_id=:user AND r.status='active' ORDER BY r.created_at DESC""", user=user["id"])]
+
+
+DEMO_QR_PREFIX = "yago:demo:"
 
 
 @router.get("/reservations/{reservation_id}/demo-qr")
 def demo_qr(reservation_id: str, user: User, db: DB):
     if os.getenv("DEMO_MODE") != "1":
         raise HTTPException(404, "Недоступно")
-    qr = one(db, """SELECT s.qr_code FROM scooter_reservations r JOIN scooters s ON s.id=r.scooter_id
-        WHERE r.id=:id AND r.customer_id=:user AND r.status='active' AND r.expires_at>now()""",
+    qr = one(db, """SELECT demo_qr_token FROM scooter_reservations
+        WHERE id=:id AND customer_id=:user AND status='active' AND expires_at>now()""",
         id=reservation_id, user=user["id"])
     if not qr:
         raise HTTPException(404, "Бронь не найдена")
-    return {"qrCode": qr["qr_code"], "emulated": True}
+    return {"qrCode": f"{DEMO_QR_PREFIX}{qr['demo_qr_token']}", "emulated": True}
 
 
 class StartInput(BaseModel):
@@ -504,7 +517,11 @@ def start_rental(reservation_id: str, body: StartInput, user: User, db: DB):
     if not reservation or str(reservation["customer_id"]) != user["id"]:
         raise HTTPException(404, "Бронь не найдена")
     scooter = one(db, "SELECT * FROM scooters WHERE id=:id FOR UPDATE", id=reservation["scooter_id"])
-    if body.qrCode != scooter["qr_code"]:
+    if body.qrCode.startswith(DEMO_QR_PREFIX):
+        valid_qr = os.getenv("DEMO_MODE") == "1" and body.qrCode == f"{DEMO_QR_PREFIX}{reservation['demo_qr_token']}"
+    else:
+        valid_qr = body.qrCode == scooter["qr_code"]
+    if not valid_qr:
         raise HTTPException(422, "QR-код не подходит к этому самокату")
     existing = one(db, "SELECT id FROM scooter_rentals WHERE reservation_id=:id", id=reservation_id)
     if existing:
@@ -513,10 +530,11 @@ def start_rental(reservation_id: str, body: StartInput, user: User, db: DB):
         release_expired(db)
         db.commit()
         raise HTTPException(409, "Срок бронирования истёк")
-    tariff = active_tariff(db, "scooter")
+    # Bookings from before migration 007 had no saved tariff.
+    tariff_id = reservation["tariff_id"] or active_tariff(db, "scooter", lock=True)["id"]
     rental_id = db.execute(text("""INSERT INTO scooter_rentals(reservation_id,scooter_id,customer_id,tariff_id)
         VALUES (:reservation,:scooter,:user,:tariff) RETURNING id"""),
-        {"reservation": reservation_id, "scooter": scooter["id"], "user": user["id"], "tariff": tariff["id"]}).scalar_one()
+        {"reservation": reservation_id, "scooter": scooter["id"], "user": user["id"], "tariff": tariff_id}).scalar_one()
     db.execute(text("UPDATE scooter_reservations SET status='started' WHERE id=:id"), {"id": reservation_id})
     db.execute(text("UPDATE scooters SET status='in_use' WHERE id=:id"), {"id": scooter["id"]})
     db.execute(text("INSERT INTO rental_status_history(rental_id,to_status,actor_id) VALUES (:id,'active',:user)"),
@@ -538,11 +556,17 @@ def finish_rental(rental_id: str, body: EndInput, user: User, db: DB):
         raise HTTPException(404, "Аренда не найдена")
     if rental["status"] == "completed":
         return rental_view(db, rental_id)
-    in_zone = one(db, """SELECT id FROM parking_zones WHERE active
-        AND ST_Covers(boundary, ST_SetSRID(ST_MakePoint(:lng,:lat),4326)) LIMIT 1""",
+    coverage = one(db, """SELECT
+        count(*) FILTER (WHERE kind='service') > 0 AS in_service,
+        count(*) FILTER (WHERE kind='parking') > 0 AS in_parking,
+        count(*) FILTER (WHERE kind='no_parking') > 0 AS prohibited
+        FROM parking_zones WHERE active
+        AND ST_Covers(boundary, ST_SetSRID(ST_MakePoint(:lng,:lat),4326))""",
         lng=body.lng, lat=body.lat)
-    if not in_zone:
-        raise HTTPException(409, "Завершите аренду в зелёной зоне парковки на карте")
+    if coverage["prohibited"]:
+        raise HTTPException(409, "В этой точке парковка запрещена. Выберите другое место")
+    if not coverage["in_service"] or not coverage["in_parking"]:
+        raise HTTPException(409, "Выберите разрешённую парковку внутри зоны обслуживания")
     tariff = one(db, "SELECT base_fare,price_per_minute FROM tariffs WHERE id=:id", id=rental["tariff_id"])
     now = datetime.now(timezone.utc)
     minutes = max(1, int((Decimal(str((now-rental["started_at"]).total_seconds())) / 60).to_integral_value(rounding=ROUND_CEILING)))
@@ -668,6 +692,7 @@ def create_scooter(body: ScooterCreate, user: User, db: DB):
 
 class ZoneInput(BaseModel):
     name: str = Field(min_length=2, max_length=120)
+    kind: Literal["service", "parking", "no_parking"] = "parking"
     south: float = Field(ge=-90, le=90)
     west: float = Field(ge=-180, le=180)
     north: float = Field(ge=-90, le=90)
@@ -675,15 +700,16 @@ class ZoneInput(BaseModel):
 
 
 class ZoneUpdate(ZoneInput):
+    kind: Literal["service", "parking", "no_parking"] | None = None
     active: bool
 
 
 @router.get("/operator/zones")
 def operator_zones(user: User, db: DB):
     require(user, "operator", "admin")
-    return [{"id": str(r["id"]), "name": r["name"], "active": r["active"],
+    return [{"id": str(r["id"]), "name": r["name"], "active": r["active"], "kind": r["kind"],
              "geometry": json.loads(r["geometry"])} for r in many(db,
-        "SELECT id,name,active,ST_AsGeoJSON(boundary) geometry FROM parking_zones ORDER BY name")]
+        "SELECT id,name,active,kind,ST_AsGeoJSON(boundary) geometry FROM parking_zones ORDER BY name")]
 
 
 @router.post("/operator/zones", status_code=201)
@@ -693,8 +719,8 @@ def create_zone(body: ZoneInput, user: User, db: DB):
         raise HTTPException(422, "Неверные границы зоны")
     if one(db, "SELECT 1 FROM parking_zones WHERE name=:name", name=body.name):
         raise HTTPException(409, "Зона с этим названием уже есть")
-    zone_id = db.execute(text("""INSERT INTO parking_zones(name,boundary)
-        VALUES (:name,ST_MakeEnvelope(:west,:south,:east,:north,4326)) RETURNING id"""),
+    zone_id = db.execute(text("""INSERT INTO parking_zones(name,kind,boundary)
+        VALUES (:name,:kind,ST_MakeEnvelope(:west,:south,:east,:north,4326)) RETURNING id"""),
         body.model_dump()).scalar_one()
     audit(db, user["id"], "zone_create", "parking_zone", zone_id)
     db.commit()
@@ -720,7 +746,7 @@ def edit_zone(zone_id: str, body: ZoneUpdate, user: User, db: DB):
         raise HTTPException(422, "Неверные границы зоны")
     if one(db, "SELECT 1 FROM parking_zones WHERE name=:name AND id<>:id", name=body.name, id=zone_id):
         raise HTTPException(409, "Зона с этим названием уже есть")
-    updated = db.execute(text("""UPDATE parking_zones SET name=:name,active=:active,
+    updated = db.execute(text("""UPDATE parking_zones SET name=:name,active=:active,kind=COALESCE(:kind,kind),
         boundary=ST_MakeEnvelope(:west,:south,:east,:north,4326) WHERE id=:id"""),
         {**body.model_dump(), "id": zone_id})
     if not updated.rowcount:
@@ -791,6 +817,7 @@ def operator_tariffs(user: User, db: DB):
              "pricePerMinute": str(t["price_per_minute"]), "validFrom": t["valid_from"],
              "validTo": t["valid_to"], "used": t["used"]} for t in many(db, """
         SELECT t.*, EXISTS(SELECT 1 FROM orders WHERE tariff_id=t.id)
+          OR EXISTS(SELECT 1 FROM scooter_reservations WHERE tariff_id=t.id)
           OR EXISTS(SELECT 1 FROM scooter_rentals WHERE tariff_id=t.id) used
         FROM tariffs t WHERE service_type_code IN ('taxi','food','scooter')
         ORDER BY valid_from DESC,id DESC""")]
@@ -801,6 +828,7 @@ def editable_tariff(db, tariff_id):
     if not tariff:
         raise HTTPException(404, "Тариф не найден")
     if one(db, """SELECT 1 FROM orders WHERE tariff_id=:id UNION ALL
+        SELECT 1 FROM scooter_reservations WHERE tariff_id=:id UNION ALL
         SELECT 1 FROM scooter_rentals WHERE tariff_id=:id LIMIT 1""", id=tariff_id):
         raise HTTPException(409, "Использованную версию тарифа менять нельзя. Создайте новую")
     return tariff
