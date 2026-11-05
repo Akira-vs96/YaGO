@@ -42,8 +42,7 @@ def health():
 async def websocket_endpoint(websocket: WebSocket):
     with SessionLocal() as db:
         identity = auth.session_user(db, websocket.cookies.get("yago_session"))
-        user = auth.public_user(db, str(identity["user_id"])) if identity else None
-    if not user:
+    if not identity:
         await websocket.close(code=4401)
         return
     origin = websocket.headers.get("origin")
@@ -52,7 +51,7 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.close(code=4403)
         return
     await websocket.accept()
-    events.connections[websocket] = user
+    events.connections[websocket] = identity["session_id"]
     try:
         while True:
             try:

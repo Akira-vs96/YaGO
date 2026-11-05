@@ -146,12 +146,12 @@ def student_discount(db, customer_id, gross):
     return discount, amount(gross - discount)
 
 
-async def calculate_quote(db, body, customer_id):
-    tariff = active_tariff(db, body.type)
+async def calculate_quote(db, body, customer_id, *, lock_tariff=False):
     if body.type == "taxi":
         if body.start is None or body.items or body.restaurantId:
             raise HTTPException(422, "Укажите две точки поездки")
         route = await driving_route(body.start, body.end)
+        tariff = active_tariff(db, body.type, lock=lock_tariff)
         distance = round(route["distance"])
         duration = round(route["duration"])
         gross = amount(Decimal(tariff["base_fare"]) + Decimal(distance) / 1000 * Decimal(tariff["price_per_km"]))
@@ -175,6 +175,7 @@ async def calculate_quote(db, body, customer_id):
         lines.append({**item, "quantity": line.quantity})
     route = await driving_route(Point(address=restaurant["address_text"], lat=float(restaurant["lat"]),
                                       lng=float(restaurant["lng"])), body.end)
+    tariff = active_tariff(db, body.type, lock=lock_tariff)
     distance = round(route["distance"])
     delivery = amount(tariff["base_fare"] + tariff["price_per_km"] * Decimal(distance) / 1000)
     discount, total = student_discount(db, customer_id, amount(subtotal + delivery))
@@ -249,7 +250,7 @@ async def create_order(body: CreateOrder, user: User, db: DB,
         if old["request_hash"] != payload_hash:
             raise HTTPException(409, "Этот ключ уже использован для другого заказа")
         return order_view(db, old["id"])
-    result = await calculate_quote(db, body, user["id"])
+    result = await calculate_quote(db, body, user["id"], lock_tariff=True)
     if body.tariffId != result["tariffId"] or amount(body.quotedTotal) != result["total"]:
         raise HTTPException(409, {"message": "Стоимость изменилась. Подтвердите новую цену", "total": str(result["total"]), "tariffId": result["tariffId"]})
     if body.type == "food":
@@ -1009,9 +1010,24 @@ class Position(BaseModel):
 
 @router.post("/trace/{performer_id}")
 async def update_position(performer_id: str, body: Position, user: User, db: DB):
-    performer = one(db, "SELECT * FROM performers WHERE id=:id", id=performer_id)
-    if not performer or str(performer["user_id"]) != user["id"]:
+    performer = one(db, "SELECT * FROM performers WHERE id=:id AND user_id=:user FOR UPDATE",
+                    id=performer_id, user=user["id"])
+    if not performer:
         raise HTTPException(404, "Исполнитель не найден")
+    return await save_position(db, performer, body)
+
+
+@router.post("/performers/me/position")
+async def update_my_position(body: Position, user: User, db: DB):
+    require(user, "driver", "courier", "performer")
+    performer = one(db, "SELECT * FROM performers WHERE user_id=:user FOR UPDATE", user=user["id"])
+    if not performer:
+        raise HTTPException(404, "Профиль исполнителя не найден")
+    return await save_position(db, performer, body)
+
+
+async def save_position(db, performer, body):
+    performer_id = str(performer["id"])
     if performer["address_id"]:
         db.execute(text("UPDATE addresses SET lat=:lat,lng=:lng WHERE id=:id"),
             {"lat": body.lat, "lng": body.lng, "id": performer["address_id"]})

@@ -233,6 +233,7 @@ function App() {
   const [connected, setConnected] = useState(false);
   const [tracking, setTracking] = useState(false);
   const refreshToken = useRef(0);
+  const pendingPositions = useRef(null);
   const [clock, setClock] = useState(Date.now());
   const [start, setStart] = useState(blank);
   const [end, setEnd] = useState(blank);
@@ -267,12 +268,13 @@ function App() {
   const activeReservation = reservations[0];
   const activeRental = rentals.find(item => item.status === 'active');
   const activeOrders = orders.filter(item => !['completed', 'cancelled'].includes(item.status));
-  const trackedPerformers = !staff && performer ? [...new Set(activeOrders.map(order => order.performerId).filter(Boolean))] : [];
-  const trackingTargets = trackedPerformers.join(',');
+  const canTrack = Boolean(performer && !staff);
 
   const refresh = useCallback(async identity => {
     if (!identity) return;
     const token = ++refreshToken.current;
+    const positions = new Map();
+    pendingPositions.current = positions;
     setLoading(true);
     try {
       const elevated = identity.roles.some(role => ['operator', 'admin'].includes(role));
@@ -281,12 +283,17 @@ function App() {
       if (identity.roles.includes('admin')) jobs.push(api('/api/admin/users'), api('/api/admin/audit'), api(`/api/admin/analytics${periodQuery.current}`), api('/api/admin/heatmap'), api('/api/admin/login-events'));
       const data = await Promise.all(jobs);
       if (token !== refreshToken.current) return;
-      setRestaurants(data[0]); setScooters(elevated ? data[8] : data[1]); setZones(data[2]); setOrders(data[3]); setRentals(data[4]); setReservations(data[5]); setTariffs(data[6]); setSessions(data[7]);
+      setRestaurants(data[0]); setScooters(elevated ? data[8] : data[1]); setZones(data[2]);
+      setOrders(data[3].map(order => positions.has(order.performerId) && !['completed', 'cancelled'].includes(order.status)
+        ? { ...order, performerPosition: positions.get(order.performerId) } : order));
+      setRentals(data[4]); setReservations(data[5]); setTariffs(data[6]); setSessions(data[7]);
       if (elevated) { setOperatorZones(data[9]); setOperatorTariffs(data[10]); }
       if (identity.roles.includes('admin')) { setUsers(data[11]); setAudit(data[12]); setAnalytics(data[13]); setHeatmap(data[14]); setLoginEvents(data[15]); }
       setError('');
     } catch (err) { if (token === refreshToken.current) { if (err.status === 401) setUser(null); else setError(err.message); } }
-    finally { if (token === refreshToken.current) setLoading(false); }
+    finally {
+      if (token === refreshToken.current) { pendingPositions.current = null; setLoading(false); }
+    }
   }, []);
   useEffect(() => {
     let alive = true;
@@ -309,8 +316,10 @@ function App() {
         try { message = JSON.parse(event.data); } catch { refresh(user); return; }
         if (message.event === 'driverMoved') {
           const { id, lat, lng } = message.data;
-          setOrders(previous => previous.map(order => order.performerId === id
-            ? { ...order, performerPosition: { lat, lng } } : order));
+          const position = { lat, lng };
+          pendingPositions.current?.set(id, position);
+          setOrders(previous => previous.map(order => order.performerId === id && !['completed', 'cancelled'].includes(order.status)
+            ? { ...order, performerPosition: position } : order));
         } else refresh(user);
       };
       socket.onclose = event => {
@@ -324,23 +333,24 @@ function App() {
     return () => { stopped = true; clearTimeout(timer); socket?.close(); };
   }, [user, refresh]);
   useEffect(() => {
-    if (!tracking || !trackingTargets) return undefined;
+    if (!tracking || !canTrack) return undefined;
     if (!navigator.geolocation) { setError('Геолокация недоступна в этом браузере'); setTracking(false); return undefined; }
-    const ids = trackingTargets.split(',');
     let lastSent = 0;
     const watch = navigator.geolocation.watchPosition(position => {
       if (Date.now() - lastSent < 5000) return;
       lastSent = Date.now();
       const point = { lat: position.coords.latitude, lng: position.coords.longitude };
-      Promise.all(ids.map(id => api(`/api/trace/${id}`, { method: 'POST', body: JSON.stringify(point) })))
-        .catch(err => setError(err.message));
+      api('/api/performers/me/position', { method: 'POST', body: JSON.stringify(point) }).catch(err => {
+        if ([401, 403, 404].includes(err.status)) setTracking(false);
+        setError(err.message);
+      });
     }, error => {
       if (error.code === 1) { setTracking(false); setError('Разрешите доступ к геопозиции для отслеживания'); }
       else setError('Не удалось получить геопозицию. Отслеживание продолжится при восстановлении сигнала');
     },
     { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 });
     return () => navigator.geolocation.clearWatch(watch);
-  }, [tracking, trackingTargets]);
+  }, [tracking, canTrack, user?.id]);
   useEffect(() => {
     const timer = window.setInterval(() => setClock(Date.now()), 15000);
     return () => window.clearInterval(timer);
@@ -384,7 +394,7 @@ function App() {
     }, 'Положение передано клиенту');
   }
   if (booting) return <div className="splash">YaGo · загружаем город…</div>;
-  if (!user) return <Auth onSuccess={identity => { setUser(identity); setProfile({ fullName: identity.full_name, phone: identity.phone || '' }); refresh(identity); }} />;
+  if (!user) return <Auth onSuccess={identity => { setTracking(false); setUser(identity); setProfile({ fullName: identity.full_name, phone: identity.phone || '' }); refresh(identity); }} />;
   return <div className="shell">
     <header className="header"><div className="brand"><span className="brand-mark">Я</span><span>YaGo</span><small>Астана</small></div><nav className="nav" aria-label="Основная навигация">{nav.map(([id, label, glyph]) => <button key={id} type="button" className={tab === id ? 'nav-item active' : 'nav-item'} onClick={() => { setTab(id); setError(''); setQuote(null); }}><span aria-hidden="true">{glyph}</span>{label}</button>)}{(staff || performer) && <button type="button" className={tab === 'office' ? 'nav-item active' : 'nav-item'} onClick={() => setTab('office')}>◫ Кабинет</button>}</nav><div className="header-user"><span>{user.full_name}</span><i className={connected ? 'connection on' : 'connection'} title={connected ? 'Связь установлена' : 'Переподключение'} /></div></header>
     {error && <div className="notice error global-notice" role="alert">{error}<button type="button" onClick={() => setError('')} aria-label="Закрыть">×</button></div>}
@@ -407,7 +417,7 @@ function App() {
       <Card title="Двухфакторная защита"><p className="muted">{user.two_factor_enabled ? 'Включена. При входе нужен код приложения.' : 'Можно подключить приложение с одноразовыми кодами.'}</p>{!user.two_factor_enabled && !twoFactorSecret && <Button variant="quiet" onClick={() => act(async () => { const result = await api('/api/auth/2fa/setup', { method: 'POST' }); setTwoFactorSecret(result.secret); })}>Настроить</Button>}{twoFactorSecret && <p className="hint">Добавьте в приложение-аутентификатор секрет: <strong>{twoFactorSecret}</strong></p>}{(twoFactorSecret || user.two_factor_enabled) && <><Field label="Код приложения" value={twoFactorCode} onChange={e => setTwoFactorCode(e.target.value)} /><Button onClick={async () => { const result = await act(() => api(user.two_factor_enabled ? '/api/auth/2fa/disable' : '/api/auth/2fa/enable', { method: 'POST', body: JSON.stringify({ code: twoFactorCode }) }), 'Настройка защиты сохранена'); if (result) { setUser({ ...user, two_factor_enabled: !user.two_factor_enabled }); setTwoFactorSecret(''); setTwoFactorCode(''); } }}>{user.two_factor_enabled ? 'Отключить' : 'Включить'}</Button></>}</Card>
       <Card title="Студенческий статус"><p className="muted">{user.student_verified ? 'Подтверждён · скидка 10% на такси и доставку' : 'Статус не подтверждён'}</p>{config?.demoMode && !user.student_verified && <><p className="hint">Учебная проверка без внешнего провайдера. Демо-код: YAGO-STUDENT</p><Field label="Учебный код" value={studentCode} onChange={e => setStudentCode(e.target.value)} /><Button onClick={async () => { const result = await act(() => api('/api/auth/student/verify', { method: 'POST', body: JSON.stringify({ code: studentCode }) }), 'Статус подтверждён'); if (result) setUser({ ...user, student_verified: true }); }}>Подтвердить</Button></>}</Card>
       <Card title="Активные сессии">{sessions.map(session => <div className="session-row" key={session.id}><span>{date(session.created_at)} {session.current && '· текущая'}</span><Button variant="quiet" onClick={async () => { await act(() => api(`/api/auth/sessions/${session.id}`, { method: 'DELETE' }), 'Сессия завершена'); if (session.current) setUser(null); }}>Завершить</Button></div>)}</Card><Button variant="secondary" onClick={async () => { await act(() => api('/api/auth/logout', { method: 'POST' })); setUser(null); }}>Выйти</Button></main>}
-    {tab === 'office' && (staff || performer) && <main className="page"><p className="eyebrow">Рабочее пространство</p><h1>{admin ? 'Администрирование' : staff ? 'Кабинет оператора' : 'Мои назначения'}</h1><div className="office-grid">{performer && !staff && trackedPerformers.length > 0 && <Button variant={tracking ? "secondary" : "primary"} onClick={() => setTracking(!tracking)}>{tracking ? "Остановить геотрекинг" : "Включить геотрекинг"}</Button>}<Card title={performer && !staff ? 'Назначенные заказы' : 'Заказы и назначения'}>{orders.length ? orders.map(order => { const next = !['taxi', 'food'].includes(order.type) ? undefined : staff ? (order.type === 'taxi' ? { pending: 'assigned' } : { pending: 'preparing', preparing: 'assigned' })[order.status] : (order.type === 'taxi' ? { assigned: 'accepted', accepted: 'arriving', arriving: 'in_progress', in_progress: 'completed' } : { assigned: 'accepted', accepted: 'picked_up', picked_up: 'completed' })[order.status]; return <div className="office-order" key={order.id}><div><strong>{serviceName(order.type)}</strong><small>{order.customer} · {names[order.status]}</small><p>{order.start.address} → {order.end.address}</p></div><div className="office-actions">{next && <Button disabled={busy} onClick={() => status(order, next)}>Следующий статус</Button>}{performer && !staff && order.performerId && !['completed', 'cancelled'].includes(order.status) && <Button variant="quiet" onClick={() => sendPosition(order.performerId)}>Передать мою позицию</Button>}</div></div>; }) : <p className="empty">Назначений пока нет.</p>}</Card>
+    {tab === 'office' && (staff || performer) && <main className="page"><p className="eyebrow">Рабочее пространство</p><h1>{admin ? 'Администрирование' : staff ? 'Кабинет оператора' : 'Мои назначения'}</h1><div className="office-grid">{canTrack && <Button variant={tracking ? "secondary" : "primary"} onClick={() => setTracking(!tracking)}>{tracking ? "Остановить геотрекинг" : "Включить геотрекинг"}</Button>}<Card title={performer && !staff ? 'Назначенные заказы' : 'Заказы и назначения'}>{orders.length ? orders.map(order => { const next = !['taxi', 'food'].includes(order.type) ? undefined : staff ? (order.type === 'taxi' ? { pending: 'assigned' } : { pending: 'preparing', preparing: 'assigned' })[order.status] : (order.type === 'taxi' ? { assigned: 'accepted', accepted: 'arriving', arriving: 'in_progress', in_progress: 'completed' } : { assigned: 'accepted', accepted: 'picked_up', picked_up: 'completed' })[order.status]; return <div className="office-order" key={order.id}><div><strong>{serviceName(order.type)}</strong><small>{order.customer} · {names[order.status]}</small><p>{order.start.address} → {order.end.address}</p></div><div className="office-actions">{next && <Button disabled={busy} onClick={() => status(order, next)}>Следующий статус</Button>}{performer && !staff && order.performerId && !['completed', 'cancelled'].includes(order.status) && <Button variant="quiet" onClick={() => sendPosition(order.performerId)}>Передать мою позицию</Button>}</div></div>; }) : <p className="empty">Назначений пока нет.</p>}</Card>
       {staff && <>
         <Card title="Новое заведение"><Field label="Название" value={restaurantForm.name} onChange={e => setRestaurantForm({ ...restaurantForm, name: e.target.value })} /><Field label="Кухня" value={restaurantForm.cuisine} onChange={e => setRestaurantForm({ ...restaurantForm, cuisine: e.target.value })} /><AddressField label="Адрес заведения" point={restaurantForm.address} onChange={value => setRestaurantForm({ ...restaurantForm, address: value })} /><Button disabled={busy || restaurantForm.address.lat === ''} onClick={() => act(() => api('/api/operator/restaurants', { method: 'POST', body: JSON.stringify(restaurantForm) }), 'Заведение добавлено')}>Добавить заведение</Button>{restaurants.map(x => <div className="session-row" key={x.id}><span>{x.name}</span><Button variant="quiet" onClick={() => act(() => api(`/api/operator/restaurants/${x.id}/status`, { method: 'PATCH', body: JSON.stringify({ active: false }) }), 'Заведение архивировано')}>В архив</Button></div>)}</Card>
         <Card title="Парк самокатов">{scooters.map(x => <div className="session-row" key={x.id}><span>{x.code} · {x.battery}% · {x.status}</span>{!['reserved', 'in_use'].includes(x.status) && <select aria-label={`Состояние ${x.code}`} value={x.status} onChange={e => act(() => api(`/api/operator/scooters/${x.id}`, { method: 'PATCH', body: JSON.stringify({ status: e.target.value, battery: x.battery }) }), 'Состояние обновлено')}><option value="available">Доступен</option><option value="maintenance">Обслуживание</option><option value="blocked">Заблокирован</option></select>}</div>)}{['code', 'qrCode', 'lat', 'lng', 'battery'].map(field => <Field key={field} label={{ code: 'Номер', qrCode: 'QR-код', lat: 'Широта', lng: 'Долгота', battery: 'Заряд, %' }[field]} value={scooterForm[field]} onChange={e => setScooterForm({ ...scooterForm, [field]: e.target.value })} />)}<Button disabled={busy} onClick={() => act(() => api('/api/operator/scooters', { method: 'POST', body: JSON.stringify(scooterForm) }), 'Самокат добавлен')}>Добавить самокат</Button></Card>
