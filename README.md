@@ -1,6 +1,6 @@
 # YaGo
 
-Материалы для команды за недели 11–15: [сценарий защиты, контрольные расчёты, матрица приёмки и запуск проверок](docs/final/README.md).
+Материалы для недель 11–15: [сценарий защиты, контрольные расчёты, матрица приёмки и проверки](docs/final/README.md).
 
 Учебный городской сервис для Астаны: такси, доставка еды из заведений и аренда электросамокатов. Интерфейс — React/Vite + Leaflet, API — FastAPI, данные — PostgreSQL/PostGIS. Заказы, сессии, статусы, тарифы и аренды сохраняются в БД. Велосипеды исключены из новых операций; старые записи остаются доступными как архив.
 
@@ -17,7 +17,7 @@ docker compose exec api python seed_demo.py
 
 Compose использует отдельное имя проекта `yago-study`, volume БД и локальные порты 55433/8008/8088. Перед первым запуском можно скопировать корневой [.env.example](.env.example) в `.env`, изменить пароль и порты. После инициализации volume пароль PostgreSQL не меняется автоматически при изменении `.env`.
 
-Демо-входы: `client@demo.yago.test`, `driver@demo.yago.test`, `driver2@demo.yago.test`, `courier@demo.yago.test`, `operator@demo.yago.test`, `admin@demo.yago.test`. Пароль по умолчанию: `YaGo-demo-2026!`; для другого пароля выполните `docker compose exec -e DEMO_PASSWORD=новый-пароль api python seed_demo.py` при первичном создании демоучётных записей. Это вымышленные данные. Демо-аккаунты и исторические примеры такси, доставки и аренды создаются только отдельной командой; повторный seed не сбрасывает пароли и не дублирует операции.
+Seed создаёт 12 вымышленных аккаунтов: клиенты `client@demo.yago.test`, `client2@demo.yago.test`, `client3@demo.yago.test`, `student@demo.yago.test`; водители `driver@demo.yago.test`, `driver2@demo.yago.test`, `driver3@demo.yago.test`; курьеры `courier@demo.yago.test`, `courier2@demo.yago.test`; операторы `operator@demo.yago.test`, `operator2@demo.yago.test`; администратор `admin@demo.yago.test`. Пароль по умолчанию для всех: `YaGo-demo-2026!`; при `DEMO_MODE=1` форму входа можно заполнить из списка ролей. Аккаунт `student@demo.yago.test` уже подтверждён и показывает скидку. Для своего пароля задайте `DEMO_PASSWORD` при первом создании аккаунтов. Каждый клиент получает собственные маршруты, блюда, историю заказов и аренду; у водителей и курьеров есть свои назначения; заведения связаны с операторами, а в аудите есть отдельные события операторов и администратора. Дополнительно создаются позиции исполнителей, три заведения с меню, четыре самоката и геозоны. Повторный запуск не сбрасывает пароли и не дублирует аккаунты или операции.
 
 Для локального запуска API и интерфейса без Compose оставьте в Compose только PostgreSQL. В первом терминале:
 
@@ -65,4 +65,4 @@ BACKUP_CONFIRMED=1 docker compose up -d api
 
 Интеграционный сценарий [smoke_test.py](server/fastapi/smoke_test.py) создаёт и меняет данные, поэтому запускайте его только на отдельном учебном стенде: `docker compose exec -T api python smoke_test.py`. Он проверяет PostgreSQL/PostGIS, права, три услуги, повторы, конкуренцию, историю, TOTP, ближайшего исполнителя, версии тарифов и адресную приватность WebSocket. Клиентские проверки: `npm run lint`, `npm run build`.
 
-Текущее состояние, проверки и оставшиеся задачи ведутся в [docs/IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md). Старые материалы курса остаются в [TZ_15weeks_team_plan.md](TZ_15weeks_team_plan.md) как проектный архив и не являются инструкцией запуска.
+Текущее состояние и проверки ведутся в [docs/IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md), подробная сверка с планом — в [docs/15_WEEK_AUDIT.md](docs/15_WEEK_AUDIT.md). [TZ_15weeks_team_plan.md](TZ_15weeks_team_plan.md) содержит требования и календарь, а не инструкцию запуска.

@@ -207,16 +207,19 @@ def config():
 
 
 @router.get("/restaurants")
-def restaurants(db: DB, q: str = Query("", max_length=100), category: str = ""):
+def restaurants(user: User, db: DB, q: str = Query("", max_length=100), category: str = ""):
     result = []
-    for restaurant in many(db, """SELECT r.id,r.name,r.cuisine,a.address_text,a.lat,a.lng FROM restaurants r
-        JOIN addresses a ON a.id=r.address_id WHERE r.status='active' AND r.name ILIKE :q ORDER BY r.name LIMIT 100""", q=f"%{q}%"):
+    for restaurant in many(db, """SELECT r.id,r.name,r.cuisine,a.address_text,a.lat,a.lng,owner.full_name owner_name
+        FROM restaurants r JOIN addresses a ON a.id=r.address_id
+        LEFT JOIN users owner ON owner.id=r.owner_user_id
+        WHERE r.status='active' AND r.name ILIKE :q ORDER BY r.name LIMIT 100""", q=f"%{q}%"):
         menu = many(db, """SELECT i.id,i.name,i.description,i.price,i.is_available,c.name category
             FROM menu_items i JOIN menu_categories c ON c.id=i.category_id
             WHERE i.restaurant_id=:id AND (:category='' OR c.name=:category) ORDER BY c.name,i.name""",
             id=restaurant["id"], category=category)
         result.append({"id": str(restaurant["id"]), "name": restaurant["name"], "cuisine": restaurant["cuisine"],
             "address": restaurant["address_text"], "lat": float(restaurant["lat"]), "lng": float(restaurant["lng"]),
+            "ownerName": restaurant["owner_name"] if {"operator", "admin"} & set(user["roles"]) else None,
             "menu": [{**x, "id": str(x["id"]), "price": str(x["price"])} for x in menu]})
     return result
 
@@ -645,9 +648,9 @@ def create_restaurant(body: RestaurantInput, user: User, db: DB):
     address_id = db.execute(text("""INSERT INTO addresses(address_text,lat,lng)
         VALUES (:name,:lat,:lng) RETURNING id"""),
         {"name": body.address.address, "lat": body.address.lat, "lng": body.address.lng}).scalar_one()
-    restaurant_id = db.execute(text("""INSERT INTO restaurants(address_id,name,cuisine)
-        VALUES (:address,:name,:cuisine) RETURNING id"""),
-        {"address": address_id, "name": body.name, "cuisine": body.cuisine}).scalar_one()
+    restaurant_id = db.execute(text("""INSERT INTO restaurants(owner_user_id,address_id,name,cuisine)
+        VALUES (:owner,:address,:name,:cuisine) RETURNING id"""),
+        {"owner": user["id"], "address": address_id, "name": body.name, "cuisine": body.cuisine}).scalar_one()
     audit(db, user["id"], "restaurant_create", "restaurant", restaurant_id)
     db.commit()
     return {"id": str(restaurant_id)}

@@ -108,6 +108,17 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
                                                    [point_b["lng"], point_b["lat"]]]
     assert check(request(customer, "POST", "/api/orders", order_data, key), 201)["id"] == order["id"]
     assert request(customer, "POST", "/api/orders", {**order_data, "end": point_a}, key).status_code == 409
+    race_key = str(uuid4())
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        repeated = list(pool.map(lambda _: request(customer, "POST", "/api/orders", order_data, race_key), range(2)))
+    repeated_orders = [check(response, 201) for response in repeated]
+    assert repeated_orders[0]["id"] == repeated_orders[1]["id"]
+    with SessionLocal() as db:
+        assert db.scalar(text("SELECT count(*) FROM orders WHERE customer_id=:user AND idempotency_key=:key"),
+                         {"user": order["customerId"], "key": race_key}) == 1
+        assert db.scalar(text("SELECT count(*) FROM order_status_history WHERE order_id=:id"),
+                         {"id": repeated_orders[0]["id"]}) == 1
+    check(request(customer, "PATCH", f"/api/orders/{repeated_orders[0]['id']}/status", {"status": "cancelled"}), 200)
     assert request(other, "GET", f"/api/orders/{order['id']}").status_code == 404
     assert request(other, "PATCH", f"/api/orders/{order['id']}/status", {"status": "cancelled"}).status_code == 409
     assert request(customer, "PATCH", f"/api/orders/{order['id']}/status", {"status": "completed"}).status_code == 409
@@ -236,17 +247,25 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
     assert Decimal(finished["total"]) == expected_total
     assert finished["tariff"]["id"] == old_rate["id"]
     assert request(customer, "DELETE", f"/api/operator/tariffs/{new_rate['id']}").status_code == 403
-    check(request(operator, "PATCH", f"/api/operator/tariffs/{new_rate['id']}",
-        {"service": "scooter", "name": f"Исправленная версия {suffix}", "baseFare": "998",
-         "pricePerKm": "0", "pricePerMinute": "998"}), 200)
+    edited_rate = {"service": "scooter", "name": f"Исправленная версия {suffix}", "baseFare": "998",
+                   "pricePerKm": "2", "pricePerMinute": "997"}
+    check(request(operator, "PATCH", f"/api/operator/tariffs/{new_rate['id']}", edited_rate), 200)
     saved_rate = next(t for t in check(request(operator, "GET", "/api/operator/tariffs"), 200)
                       if t["id"] == new_rate["id"])
-    assert saved_rate["name"] == f"Исправленная версия {suffix}"
-    assert Decimal(saved_rate["baseFare"]) == Decimal(saved_rate["pricePerMinute"]) == Decimal(998)
+    assert saved_rate["name"] == edited_rate["name"]
+    assert saved_rate["service"] == edited_rate["service"]
+    for field in ("baseFare", "pricePerKm", "pricePerMinute"):
+        assert Decimal(saved_rate[field]) == Decimal(edited_rate[field]), saved_rate
+    active_rate = next(t for t in check(request(customer, "GET", "/api/tariffs"), 200)
+                       if t["service"] == "scooter")
+    assert active_rate["id"] == saved_rate["id"]
+    assert Decimal(active_rate["baseFare"]) == Decimal(edited_rate["baseFare"])
     check(request(operator, "DELETE", f"/api/operator/tariffs/{new_rate['id']}"), 200)
+    assert all(t["id"] != new_rate["id"] for t in check(request(operator, "GET", "/api/operator/tariffs"), 200))
     assert request(operator, "PATCH", f"/api/operator/tariffs/{old_rate['id']}",
         {"service": "scooter", "name": "Нельзя менять", "baseFare": "1",
          "pricePerKm": "0", "pricePerMinute": "1"}).status_code == 409
+    assert request(operator, "DELETE", f"/api/operator/tariffs/{old_rate['id']}").status_code == 409
     assert check(request(customer, "POST", f"/api/rentals/{rental['id']}/finish", point_a), 200)["total"] == finished["total"]
     with ThreadPoolExecutor(max_workers=2) as pool:
         races = list(pool.map(lambda args: request(args[0], "POST", "/api/scooters/reserve",
