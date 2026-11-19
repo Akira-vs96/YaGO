@@ -93,7 +93,13 @@ function AddressField({ label, point, onChange }) {
   </div>;
 }
 
-const emptyZone = () => ({ name: '', south: '51.12', west: '71.42', north: '51.14', east: '71.45', active: true });
+const zoneKinds = { service: 'Зона обслуживания', parking: 'Парковка', no_parking: 'Парковка запрещена' };
+const zoneStyles = {
+  service: { color: '#315ea0', fillOpacity: .03, dashArray: '5 5', weight: 2 },
+  parking: { color: '#397a35', fillColor: '#aee06f', fillOpacity: .18, weight: 2 },
+  no_parking: { color: '#b33c2c', fillColor: '#e36554', fillOpacity: .3, weight: 2 },
+};
+const emptyZone = () => ({ name: '', kind: 'parking', south: '51.12', west: '71.42', north: '51.14', east: '71.45', active: true });
 function ZoneManager({ zones, act, busy }) {
   const [selected, setSelected] = useState('');
   const [form, setForm] = useState(emptyZone);
@@ -102,7 +108,7 @@ function ZoneManager({ zones, act, busy }) {
     const lng = ring.map(point => point[0]);
     const lat = ring.map(point => point[1]);
     setSelected(zone.id);
-    setForm({ name: zone.name, south: String(Math.min(...lat)), west: String(Math.min(...lng)),
+    setForm({ name: zone.name, kind: zone.kind, south: String(Math.min(...lat)), west: String(Math.min(...lng)),
       north: String(Math.max(...lat)), east: String(Math.max(...lng)), active: zone.active });
   }
   async function save() {
@@ -112,21 +118,25 @@ function ZoneManager({ zones, act, busy }) {
       { method: selected ? 'PATCH' : 'POST', body: JSON.stringify(body) }), 'Зона сохранена');
     if (result) { setSelected(''); setForm(emptyZone()); }
   }
-  return <Card title="Геозоны парковки">
-    {zones.map(zone => <div className="session-row" key={zone.id}><span>{zone.name} · {zone.active ? 'активна' : 'архив'}</span>
+  return <Card title="Геозоны аренды">
+    {zones.map(zone => <div className="session-row" key={zone.id}><span>{zone.name} · {zoneKinds[zone.kind]} · {zone.active ? 'активна' : 'архив'}</span>
       <div className="office-actions"><Button variant="quiet" onClick={() => choose(zone)}>Изменить</Button>
         <Button variant="quiet" onClick={() => act(() => api(`/api/operator/zones/${zone.id}/status`,
           { method: 'PATCH', body: JSON.stringify({ active: !zone.active }) }), 'Зона обновлена')}>{zone.active ? 'Архивировать' : 'Включить'}</Button>
         {!zone.active && <Button variant="quiet" onClick={() => { if (window.confirm(`Удалить зону «${zone.name}»?`)) act(() => api(`/api/operator/zones/${zone.id}`, { method: 'DELETE' }), 'Зона удалена'); }}>Удалить</Button>}</div>
     </div>)}
     <h3>{selected ? 'Изменить зону' : 'Новая зона'}</h3>
+    <label className="field"><span>Тип зоны</span><select value={form.kind}
+      onChange={event => setForm({ ...form, kind: event.target.value })}>
+      {Object.entries(zoneKinds).map(([kind, label]) => <option key={kind} value={kind}>{label}</option>)}
+    </select></label>
     {['name', 'south', 'west', 'north', 'east'].map(field => <Field key={field}
       label={{ name: 'Название', south: 'Южная граница', west: 'Западная граница', north: 'Северная граница', east: 'Восточная граница' }[field]}
       value={form[field]} onChange={event => setForm({ ...form, [field]: event.target.value })} />)}
     {selected && <label className="field"><span>Состояние</span><select value={String(form.active)}
       onChange={event => setForm({ ...form, active: event.target.value === 'true' })}>
       <option value="true">Активна</option><option value="false">Архив</option></select></label>}
-    <p className="hint">Координаты WGS84; граница зоны разрешена для парковки.</p>
+    <p className="hint">Завершение разрешено на парковке внутри зоны обслуживания. Запретная зона имеет приоритет.</p>
     <Button disabled={busy} onClick={save}>{selected ? 'Сохранить зону' : 'Создать зону'}</Button>
     {selected && <Button variant="quiet" onClick={() => { setSelected(''); setForm(emptyZone()); }}>Отмена</Button>}
   </Card>;
@@ -226,6 +236,7 @@ function App() {
   const [connected, setConnected] = useState(false);
   const [tracking, setTracking] = useState(false);
   const refreshToken = useRef(0);
+  const pendingPositions = useRef(null);
   const [clock, setClock] = useState(Date.now());
   const [start, setStart] = useState(blank);
   const [end, setEnd] = useState(blank);
@@ -261,12 +272,13 @@ function App() {
   const activeReservation = reservations[0];
   const activeRental = rentals.find(item => item.status === 'active');
   const activeOrders = orders.filter(item => !['completed', 'cancelled'].includes(item.status));
-  const trackedPerformers = !staff && performer ? [...new Set(activeOrders.map(order => order.performerId).filter(Boolean))] : [];
-  const trackingTargets = trackedPerformers.join(',');
+  const canTrack = Boolean(performer && !staff);
 
   const refresh = useCallback(async identity => {
     if (!identity) return;
     const token = ++refreshToken.current;
+    const positions = new Map();
+    pendingPositions.current = positions;
     setLoading(true);
     try {
       const elevated = identity.roles.some(role => ['operator', 'admin'].includes(role));
@@ -275,12 +287,17 @@ function App() {
       if (identity.roles.includes('admin')) jobs.push(api('/api/admin/users'), api('/api/admin/audit'), api(`/api/admin/analytics${periodQuery.current}`), api('/api/admin/heatmap'), api('/api/admin/login-events'));
       const data = await Promise.all(jobs);
       if (token !== refreshToken.current) return;
-      setRestaurants(data[0]); setScooters(elevated ? data[8] : data[1]); setZones(data[2]); setOrders(data[3]); setRentals(data[4]); setReservations(data[5]); setTariffs(data[6]); setSessions(data[7]);
+      setRestaurants(data[0]); setScooters(elevated ? data[8] : data[1]); setZones(data[2]);
+      setOrders(data[3].map(order => positions.has(order.performerId) && !['completed', 'cancelled'].includes(order.status)
+        ? { ...order, performerPosition: positions.get(order.performerId) } : order));
+      setRentals(data[4]); setReservations(data[5]); setTariffs(data[6]); setSessions(data[7]);
       if (elevated) { setOperatorZones(data[9]); setOperatorTariffs(data[10]); }
       if (identity.roles.includes('admin')) { setUsers(data[11]); setAudit(data[12]); setAnalytics(data[13]); setHeatmap(data[14]); setLoginEvents(data[15]); }
       setError('');
     } catch (err) { if (token === refreshToken.current) { if (err.status === 401) setUser(null); else setError(err.message); } }
-    finally { if (token === refreshToken.current) setLoading(false); }
+    finally {
+      if (token === refreshToken.current) { pendingPositions.current = null; setLoading(false); }
+    }
   }, []);
   useEffect(() => {
     let alive = true;
@@ -303,8 +320,10 @@ function App() {
         try { message = JSON.parse(event.data); } catch { refresh(user); return; }
         if (message.event === 'driverMoved') {
           const { id, lat, lng } = message.data;
-          setOrders(previous => previous.map(order => order.performerId === id
-            ? { ...order, performerPosition: { lat, lng } } : order));
+          const position = { lat, lng };
+          pendingPositions.current?.set(id, position);
+          setOrders(previous => previous.map(order => order.performerId === id && !['completed', 'cancelled'].includes(order.status)
+            ? { ...order, performerPosition: position } : order));
         } else refresh(user);
       };
       socket.onclose = event => {
@@ -318,23 +337,24 @@ function App() {
     return () => { stopped = true; clearTimeout(timer); socket?.close(); };
   }, [user, refresh]);
   useEffect(() => {
-    if (!tracking || !trackingTargets) return undefined;
+    if (!tracking || !canTrack) return undefined;
     if (!navigator.geolocation) { setError('Геолокация недоступна в этом браузере'); setTracking(false); return undefined; }
-    const ids = trackingTargets.split(',');
     let lastSent = 0;
     const watch = navigator.geolocation.watchPosition(position => {
       if (Date.now() - lastSent < 5000) return;
       lastSent = Date.now();
       const point = { lat: position.coords.latitude, lng: position.coords.longitude };
-      Promise.all(ids.map(id => api(`/api/trace/${id}`, { method: 'POST', body: JSON.stringify(point) })))
-        .catch(err => setError(err.message));
+      api('/api/performers/me/position', { method: 'POST', body: JSON.stringify(point) }).catch(err => {
+        if ([401, 403, 404].includes(err.status)) setTracking(false);
+        setError(err.message);
+      });
     }, error => {
       if (error.code === 1) { setTracking(false); setError('Разрешите доступ к геопозиции для отслеживания'); }
       else setError('Не удалось получить геопозицию. Отслеживание продолжится при восстановлении сигнала');
     },
     { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 });
     return () => navigator.geolocation.clearWatch(watch);
-  }, [tracking, trackingTargets]);
+  }, [tracking, canTrack, user?.id]);
   useEffect(() => {
     const timer = window.setInterval(() => setClock(Date.now()), 15000);
     return () => window.clearInterval(timer);
@@ -385,7 +405,7 @@ function App() {
     }, 'Положение передано клиенту');
   }
   if (booting) return <div className="splash">YaGo · загружаем город…</div>;
-  if (!user) return <Auth onSuccess={identity => { setUser(identity); setProfile({ fullName: identity.full_name, phone: identity.phone || '' }); refresh(identity); }} />;
+  if (!user) return <Auth onSuccess={identity => { setTracking(false); setUser(identity); setProfile({ fullName: identity.full_name, phone: identity.phone || '' }); refresh(identity); }} />;
   return <div className="shell">
     <header className="header"><div className="brand"><span className="brand-mark">Я</span><span>YaGo</span><small>Астана</small></div><nav className="nav" aria-label="Основная навигация">{nav.map(([id, label, glyph]) => <button key={id} type="button" className={tab === id ? 'nav-item active' : 'nav-item'} onClick={() => { setTab(id); setError(''); setQuote(null); }}><span aria-hidden="true">{glyph}</span>{label}</button>)}{(staff || performer) && <button type="button" className={tab === 'office' ? 'nav-item active' : 'nav-item'} onClick={() => setTab('office')}>◫ Кабинет</button>}</nav><div className="header-user"><span>{user.full_name}</span><i className={connected ? 'connection on' : 'connection'} title={connected ? 'Связь установлена' : 'Переподключение'} /></div></header>
     {error && <div className="notice error global-notice" role="alert">{error}<button type="button" onClick={() => setError('')} aria-label="Закрыть">×</button></div>}
@@ -398,8 +418,8 @@ function App() {
         {lines.length > 0 && <Card title="Корзина"><p>{lines.reduce((count, line) => count + line.quantity, 0)} позиции · один ресторан</p><AddressField label="Адрес доставки" point={end} onChange={value => { mapPickVersion.current.end++; setEnd(value); setQuote(null); }} /><Button onClick={getQuote} disabled={busy}>Рассчитать доставку</Button></Card>}</>}
       {quote && ['taxi', 'food'].includes(tab) && <Card title="Ваш заказ" className="quote-card"><div className="quote-total"><span>К оплате</span><strong>{money(quote.total)}</strong></div>{quote.discount > 0 && <p className="muted">Студенческая скидка: −{money(quote.discount)}</p>}{quote.distanceMeters != null && <p className="muted">{(quote.distanceMeters / 1000).toFixed(1)} км · около {Math.ceil(quote.durationSeconds / 60)} мин</p>}{quote.delivery != null && <p className="muted">Блюда {money(quote.subtotal)} · доставка {money(quote.delivery)}</p>}<p className="hint">Оплата учебная; итог проверяет сервер.</p><Button onClick={createOrder} disabled={busy}>{busy ? 'Оформляем…' : 'Подтвердить заказ'}</Button></Card>}
       {tab === 'scooter' && <><Card title="Доступные рядом"><p className="muted">Выберите метку на карте или самокат из списка.</p>{scooters.filter(x => x.status === 'available').map(x => <button type="button" className={selectedScooter === x.id ? 'vehicle selected' : 'vehicle'} key={x.id} onClick={() => setSelectedScooter(x.id)}><strong>{x.code}</strong><span>Заряд {x.battery}%</span></button>)}{!scooters.some(x => x.status === 'available') && <p className="empty">Свободных самокатов нет.</p>}{vehicle?.status === 'available' && <Button disabled={busy} onClick={async () => { const result = await act(() => api('/api/scooters/reserve', { method: 'POST', headers: { 'Idempotency-Key': crypto.randomUUID() }, body: JSON.stringify({ scooterId: vehicle.id }) }), 'Самокат забронирован'); if (result) setSelectedScooter(''); }}>Забронировать {vehicle.code}</Button>}</Card>
-        {activeReservation && <Card title={`Бронь · ${activeReservation.code}`}><p>До {date(activeReservation.expiresAt)}</p><p className="hint">QR-разблокировка в учебном режиме эмулируется.</p>{config?.demoMode && <Button variant="quiet" onClick={() => act(async () => { const result = await api(`/api/reservations/${activeReservation.id}/demo-qr`); setQrCode(result.qrCode); }, 'Демо-код получен')}>Показать демо-код</Button>}<Field label="Код с самоката" value={qrCode} onChange={e => setQrCode(e.target.value)} /><Button disabled={busy || !qrCode} onClick={() => act(() => api(`/api/reservations/${activeReservation.id}/start`, { method: 'POST', body: JSON.stringify({ qrCode }) }), 'Аренда началась')}>Начать аренду</Button></Card>}
-        {activeRental && <Card title={`Аренда · ${activeRental.scooterCode}`}><p>Началась {date(activeRental.startedAt)}</p><p>Прошло {Math.max(1, Math.ceil((clock - new Date(activeRental.startedAt).getTime()) / 60000))} мин</p><p className="muted">Оценка: {money(Number(activeRental.tariff?.baseFare || 0) + Math.max(1, Math.ceil((clock - new Date(activeRental.startedAt).getTime()) / 60000)) * Number(activeRental.tariff?.pricePerMinute || 0))}</p><p className="hint">Для завершения выберите точку в зелёной зоне на карте. Итоговую стоимость определит сервер.</p>{parkingPoint.lat !== '' && <p className="hint">Парковка: {parkingPoint.address}</p>}<Button disabled={busy || parkingPoint.lat === ''} onClick={() => act(() => api(`/api/rentals/${activeRental.id}/finish`, { method: 'POST', body: JSON.stringify({ lat: parkingPoint.lat, lng: parkingPoint.lng }) }), 'Аренда завершена, учебная оплата проведена')}>Завершить аренду</Button></Card>}
+        {activeReservation && <Card title={`Бронь · ${activeReservation.code}`}><p>До {date(activeReservation.expiresAt)}</p>{activeReservation.tariff && <p>Тариф брони: {money(activeReservation.tariff.baseFare)} + {money(activeReservation.tariff.pricePerMinute)} / мин</p>}<p className="hint">Учебный код привязан к этой брони.</p>{config?.demoMode && <Button variant="quiet" onClick={() => act(async () => { const result = await api(`/api/reservations/${activeReservation.id}/demo-qr`); setQrCode(result.qrCode); }, 'Демо-код получен')}>Показать демо-код</Button>}<Field label="Код с самоката" value={qrCode} onChange={e => setQrCode(e.target.value)} /><Button disabled={busy || !qrCode} onClick={() => act(() => api(`/api/reservations/${activeReservation.id}/start`, { method: 'POST', body: JSON.stringify({ qrCode }) }), 'Аренда началась')}>Начать аренду</Button></Card>}
+        {activeRental && <Card title={`Аренда · ${activeRental.scooterCode}`}><p>Началась {date(activeRental.startedAt)}</p><p>Прошло {Math.max(1, Math.ceil((clock - new Date(activeRental.startedAt).getTime()) / 60000))} мин</p><p className="muted">Оценка: {money(Number(activeRental.tariff?.baseFare || 0) + Math.max(1, Math.ceil((clock - new Date(activeRental.startedAt).getTime()) / 60000)) * Number(activeRental.tariff?.pricePerMinute || 0))}</p><p className="hint">Для завершения выберите точку на зелёной парковке внутри синей зоны обслуживания и вне красной зоны запрета.</p>{parkingPoint.lat !== '' && <p className="hint">Парковка: {parkingPoint.address}</p>}<Button disabled={busy || parkingPoint.lat === ''} onClick={() => act(() => api(`/api/rentals/${activeRental.id}/finish`, { method: 'POST', body: JSON.stringify({ lat: parkingPoint.lat, lng: parkingPoint.lng }) }), 'Аренда завершена, учебная оплата проведена')}>Завершить аренду</Button></Card>}
         <Card title="Тариф"><p>{tariffs.find(x => x.service === 'scooter')?.name || 'Нет действующего тарифа'}</p><p className="muted">От {money(tariffs.find(x => x.service === 'scooter')?.baseFare)} + {money(tariffs.find(x => x.service === 'scooter')?.pricePerMinute)} / мин</p></Card></>}
       {activeOrders.length > 0 && <Card title="Активный заказ">{activeOrders.map(order => <div className="compact-order" key={order.id}><strong>{serviceName(order.type)}</strong><span>{names[order.status]}</span><small>{order.end.address}</small><b>{money(order.total)}</b></div>)}</Card>}
     </aside><section className="map-stage" aria-label="Карта Астаны"><div className="map-heading"><div><p className="eyebrow">Астана</p><h2>Город на ладони</h2></div>
@@ -409,13 +429,13 @@ function App() {
           <button type="button" aria-pressed={mapTarget === 'end'} onClick={() => setMapTarget('end')}>Б · Куда{end.lat !== '' && ' ✓'}</button>
         </div>}
         <p className="map-hint" aria-live="polite">{tab === 'taxi' ? `Нажмите на карту, чтобы выбрать ${mapTarget === 'start' ? 'точку отправления' : 'точку назначения'}` : tab === 'food' ? 'Нажмите на карту, чтобы выбрать адрес доставки' : 'Нажмите на карту, чтобы выбрать место парковки'}</p>
-      </div></div><MapContainer center={[51.129, 71.43]} zoom={13} scrollWheelZoom className="map"><TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url={import.meta.env.VITE_MAP_TILES_URL || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'} /><MapClick onPick={pickMap} /><OrderMapLayers orders={activeOrders} tab={tab} />{quote?.geometry?.coordinates && <Polyline positions={quote.geometry.coordinates.map(([lng, lat]) => [lat, lng])} pathOptions={{ color: '#287443', weight: 5, opacity: .85 }} />}{tab === 'scooter' && zones.map(zone => <GeoJSON key={zone.id} data={zone.geometry} style={{ color: '#397a35', fillColor: '#aee06f', fillOpacity: .18, weight: 2 }} />)}{tab === 'scooter' && scooters.filter(x => x.status === 'available').map(x => <Marker key={x.id} position={[x.lat, x.lng]} icon={marker} eventHandlers={{ click: () => setSelectedScooter(x.id) }} />)}{start.lat !== '' && tab === 'taxi' && <Marker position={[start.lat, start.lng]} icon={startMarker} />}{tab !== 'scooter' && end.lat !== '' && <Marker position={[end.lat, end.lng]} icon={endMarker} />}{tab === 'scooter' && parkingPoint.lat !== '' && <Marker position={[parkingPoint.lat, parkingPoint.lng]} icon={marker} />}{tab === 'food' && restaurants.map(x => <Marker key={x.id} position={[x.lat, x.lng]} icon={marker} eventHandlers={{ click: () => selectRestaurant(x.id) }} />)}{activeOrders.filter(x => x.type === tab && x.performerPosition).map(x => <Marker key={x.id} position={[x.performerPosition.lat, x.performerPosition.lng]} icon={marker} />)}</MapContainer><div className="map-footer">Адреса: Nominatim · автомобильный маршрут: OSRM · карта: OpenStreetMap</div></section></main>}
+      </div></div><MapContainer center={[51.129, 71.43]} zoom={13} scrollWheelZoom className="map"><TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url={import.meta.env.VITE_MAP_TILES_URL || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'} /><MapClick onPick={pickMap} /><OrderMapLayers orders={activeOrders} tab={tab} />{quote?.geometry?.coordinates && <Polyline positions={quote.geometry.coordinates.map(([lng, lat]) => [lat, lng])} pathOptions={{ color: '#287443', weight: 5, opacity: .85 }} />}{tab === 'scooter' && zones.map(zone => <GeoJSON key={zone.id} data={zone.geometry} style={zoneStyles[zone.kind]} interactive={false} />)}{tab === 'scooter' && scooters.filter(x => x.status === 'available').map(x => <Marker key={x.id} position={[x.lat, x.lng]} icon={marker} eventHandlers={{ click: () => setSelectedScooter(x.id) }} />)}{start.lat !== '' && tab === 'taxi' && <Marker position={[start.lat, start.lng]} icon={startMarker} />}{tab !== 'scooter' && end.lat !== '' && <Marker position={[end.lat, end.lng]} icon={endMarker} />}{tab === 'scooter' && parkingPoint.lat !== '' && <Marker position={[parkingPoint.lat, parkingPoint.lng]} icon={marker} />}{tab === 'food' && restaurants.map(x => <Marker key={x.id} position={[x.lat, x.lng]} icon={marker} eventHandlers={{ click: () => selectRestaurant(x.id) }} />)}{activeOrders.filter(x => x.type === tab && x.performerPosition).map(x => <Marker key={x.id} position={[x.performerPosition.lat, x.performerPosition.lng]} icon={marker} />)}</MapContainer><div className="map-footer">Адреса: Nominatim · автомобильный маршрут: OSRM · карта: OpenStreetMap</div></section></main>}
     {tab === 'history' && <main className="page"><div className="page-title"><div><p className="eyebrow">Ваши операции</p><h1>История</h1></div><Button variant="quiet" onClick={() => refresh(user)}>{loading ? 'Обновляем…' : 'Обновить'}</Button></div><div className="history-grid"><Card title="Заказы">{orders.length ? orders.map(order => <div className="history-item" key={order.id}><div><strong>{serviceName(order.type)}</strong><small>{date(order.createdAt)}</small><p>{order.start.address} → {order.end.address}</p>{order.items.map((item, i) => <small key={i}>{item.name} × {item.quantity} · {money(item.unitPrice)}</small>)}</div><div><span className="badge">{names[order.status]}</span><b>{money(order.total)}</b>{order.discount > 0 && <small>Скидка {money(order.discount)}</small>}{order.status === 'pending' && ['taxi', 'food'].includes(order.type) && <Button variant="quiet" onClick={() => status(order, 'cancelled')}>Отменить</Button>}{order.status === 'completed' && ['taxi', 'food'].includes(order.type) && <Button variant="quiet" onClick={() => { const rating = Number(window.prompt('Оценка от 1 до 5')); if (rating >= 1 && rating <= 5) act(() => api(`/api/orders/${order.id}/review`, { method: 'POST', body: JSON.stringify({ rating }) }), 'Спасибо за отзыв'); }}>Оставить отзыв</Button>}</div></div>) : <p className="empty">Заказов пока нет. Выберите услугу, чтобы начать.</p>}</Card><Card title="Аренды самокатов">{rentals.length ? rentals.map(rental => <div className="history-item" key={rental.id}><div><strong>{rental.scooterCode}</strong><small>{date(rental.startedAt)}</small></div><div><span className="badge">{names[rental.status]}</span><b>{rental.total ? money(rental.total) : 'В пути'}</b></div></div>) : <p className="empty">Аренд пока нет.</p>}</Card></div></main>}
     {tab === 'profile' && <main className="page narrow"><p className="eyebrow">Личный кабинет</p><h1>Профиль</h1><Card title="Ваши данные"><Field label="Имя" value={profile.fullName} onChange={e => setProfile({ ...profile, fullName: e.target.value })} /><Field label="Телефон" value={profile.phone} onChange={e => setProfile({ ...profile, phone: e.target.value })} /><p className="muted">{user.email}</p><Button disabled={busy} onClick={async () => { const result = await act(() => api('/api/profile', { method: 'PATCH', body: JSON.stringify(profile) }), 'Профиль сохранён'); if (result) setUser({ ...user, full_name: profile.fullName, phone: profile.phone }); }}>Сохранить</Button></Card>
       <Card title="Двухфакторная защита"><p className="muted">{user.two_factor_enabled ? 'Включена. При входе нужен код приложения.' : 'Можно подключить приложение с одноразовыми кодами.'}</p>{!user.two_factor_enabled && !twoFactorSecret && <Button variant="quiet" onClick={() => act(async () => { const result = await api('/api/auth/2fa/setup', { method: 'POST' }); setTwoFactorSecret(result.secret); })}>Настроить</Button>}{twoFactorSecret && <p className="hint">Добавьте в приложение-аутентификатор секрет: <strong>{twoFactorSecret}</strong></p>}{(twoFactorSecret || user.two_factor_enabled) && <><Field label="Код приложения" value={twoFactorCode} onChange={e => setTwoFactorCode(e.target.value)} /><Button onClick={async () => { const result = await act(() => api(user.two_factor_enabled ? '/api/auth/2fa/disable' : '/api/auth/2fa/enable', { method: 'POST', body: JSON.stringify({ code: twoFactorCode }) }), 'Настройка защиты сохранена'); if (result) { setUser({ ...user, two_factor_enabled: !user.two_factor_enabled }); setTwoFactorSecret(''); setTwoFactorCode(''); } }}>{user.two_factor_enabled ? 'Отключить' : 'Включить'}</Button></>}</Card>
       <Card title="Студенческий статус"><p className="muted">{user.student_verified ? 'Подтверждён · скидка 10% на такси и доставку' : 'Статус не подтверждён'}</p>{config?.demoMode && !user.student_verified && <><p className="hint">Учебная проверка без внешнего провайдера. Демо-код: YAGO-STUDENT</p><Field label="Учебный код" value={studentCode} onChange={e => setStudentCode(e.target.value)} /><Button onClick={async () => { const result = await act(() => api('/api/auth/student/verify', { method: 'POST', body: JSON.stringify({ code: studentCode }) }), 'Статус подтверждён'); if (result) setUser({ ...user, student_verified: true }); }}>Подтвердить</Button></>}</Card>
       <Card title="Активные сессии">{sessions.map(session => <div className="session-row" key={session.id}><span>{date(session.created_at)} {session.current && '· текущая'}</span><Button variant="quiet" onClick={async () => { await act(() => api(`/api/auth/sessions/${session.id}`, { method: 'DELETE' }), 'Сессия завершена'); if (session.current) setUser(null); }}>Завершить</Button></div>)}</Card><Button variant="secondary" onClick={async () => { await act(() => api('/api/auth/logout', { method: 'POST' })); setUser(null); }}>Выйти</Button></main>}
-    {tab === 'office' && (staff || performer) && <main className="page"><p className="eyebrow">Рабочее пространство</p><h1>{admin ? 'Администрирование' : staff ? 'Кабинет оператора' : 'Мои назначения'}</h1><div className="office-grid">{performer && !staff && trackedPerformers.length > 0 && <Button variant={tracking ? "secondary" : "primary"} onClick={() => setTracking(!tracking)}>{tracking ? "Остановить геотрекинг" : "Включить геотрекинг"}</Button>}<Card title={performer && !staff ? 'Назначенные заказы' : 'Заказы и назначения'}>{orders.length ? orders.map(order => { const next = !['taxi', 'food'].includes(order.type) ? undefined : staff ? (order.type === 'taxi' ? { pending: 'assigned' } : { pending: 'preparing', preparing: 'assigned' })[order.status] : (order.type === 'taxi' ? { assigned: 'accepted', accepted: 'arriving', arriving: 'in_progress', in_progress: 'completed' } : { assigned: 'accepted', accepted: 'picked_up', picked_up: 'completed' })[order.status]; return <div className="office-order" key={order.id}><div><strong>{serviceName(order.type)}</strong><small>{order.customer} · {names[order.status]}</small><p>{order.start.address} → {order.end.address}</p></div><div className="office-actions">{next && <Button disabled={busy} onClick={() => status(order, next)}>Следующий статус</Button>}{performer && !staff && order.performerId && !['completed', 'cancelled'].includes(order.status) && <Button variant="quiet" onClick={() => sendPosition(order.performerId)}>Передать мою позицию</Button>}</div></div>; }) : <p className="empty">Назначений пока нет.</p>}</Card>
+    {tab === 'office' && (staff || performer) && <main className="page"><p className="eyebrow">Рабочее пространство</p><h1>{admin ? 'Администрирование' : staff ? 'Кабинет оператора' : 'Мои назначения'}</h1><div className="office-grid">{canTrack && <Button variant={tracking ? "secondary" : "primary"} onClick={() => setTracking(!tracking)}>{tracking ? "Остановить геотрекинг" : "Включить геотрекинг"}</Button>}<Card title={performer && !staff ? 'Назначенные заказы' : 'Заказы и назначения'}>{orders.length ? orders.map(order => { const next = !['taxi', 'food'].includes(order.type) ? undefined : staff ? (order.type === 'taxi' ? { pending: 'assigned' } : { pending: 'preparing', preparing: 'assigned' })[order.status] : (order.type === 'taxi' ? { assigned: 'accepted', accepted: 'arriving', arriving: 'in_progress', in_progress: 'completed' } : { assigned: 'accepted', accepted: 'picked_up', picked_up: 'completed' })[order.status]; return <div className="office-order" key={order.id}><div><strong>{serviceName(order.type)}</strong><small>{order.customer} · {names[order.status]}</small><p>{order.start.address} → {order.end.address}</p></div><div className="office-actions">{next && <Button disabled={busy} onClick={() => status(order, next)}>Следующий статус</Button>}{performer && !staff && order.performerId && !['completed', 'cancelled'].includes(order.status) && <Button variant="quiet" onClick={() => sendPosition(order.performerId)}>Передать мою позицию</Button>}</div></div>; }) : <p className="empty">Назначений пока нет.</p>}</Card>
       {staff && <>
         <Card title="Новое заведение"><Field label="Название" value={restaurantForm.name} onChange={e => setRestaurantForm({ ...restaurantForm, name: e.target.value })} /><Field label="Кухня" value={restaurantForm.cuisine} onChange={e => setRestaurantForm({ ...restaurantForm, cuisine: e.target.value })} /><AddressField label="Адрес заведения" point={restaurantForm.address} onChange={value => setRestaurantForm({ ...restaurantForm, address: value })} /><Button disabled={busy || restaurantForm.address.lat === ''} onClick={() => act(() => api('/api/operator/restaurants', { method: 'POST', body: JSON.stringify(restaurantForm) }), 'Заведение добавлено')}>Добавить заведение</Button>{restaurants.map(x => <div className="session-row" key={x.id}><span>{x.name}</span><Button variant="quiet" onClick={() => act(() => api(`/api/operator/restaurants/${x.id}/status`, { method: 'PATCH', body: JSON.stringify({ active: false }) }), 'Заведение архивировано')}>В архив</Button></div>)}</Card>
         <Card title="Парк самокатов">{scooters.map(x => <div className="session-row" key={x.id}><span>{x.code} · {x.battery}% · {x.status}</span>{!['reserved', 'in_use'].includes(x.status) && <select aria-label={`Состояние ${x.code}`} value={x.status} onChange={e => act(() => api(`/api/operator/scooters/${x.id}`, { method: 'PATCH', body: JSON.stringify({ status: e.target.value, battery: x.battery }) }), 'Состояние обновлено')}><option value="available">Доступен</option><option value="maintenance">Обслуживание</option><option value="blocked">Заблокирован</option></select>}</div>)}{['code', 'qrCode', 'lat', 'lng', 'battery'].map(field => <Field key={field} label={{ code: 'Номер', qrCode: 'QR-код', lat: 'Широта', lng: 'Долгота', battery: 'Заряд, %' }[field]} value={scooterForm[field]} onChange={e => setScooterForm({ ...scooterForm, [field]: e.target.value })} />)}<Button disabled={busy} onClick={() => act(() => api('/api/operator/scooters', { method: 'POST', body: JSON.stringify(scooterForm) }), 'Самокат добавлен')}>Добавить самокат</Button></Card>
