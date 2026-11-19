@@ -13,6 +13,7 @@ from app import events, services
 from app.auth import session_user, totp, valid_totp
 from app.db import SessionLocal
 from app.main import app
+from final_checks import check_access, check_orders, check_fleet, check_provider_timeout, check_analytics_volume
 
 
 async def fixed_route(start, end):
@@ -312,6 +313,11 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
     check(request(other, "POST", "/api/auth/verify-2fa", {"code": code}), 200)
     assert request(other, "GET", "/api/auth/me").status_code == 200
     assert request(other, "POST", "/api/auth/verify-2fa", {"code": code}).status_code == 401
+    check_access(request, check, customer, operator, admin, suffix)
+    check_orders(request, check, customer, operator, taxi)
+    check_fleet(request, check, customer, operator, vehicle, point_a)
+    asyncio.run(check_provider_timeout())
+    check_analytics_volume()
     check(request(customer, "POST", "/api/auth/logout"), 200)
     assert request(customer, "GET", "/api/auth/me").status_code == 401
 with TestClient(app) as anonymous:

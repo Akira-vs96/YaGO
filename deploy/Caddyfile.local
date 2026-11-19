@@ -1,0 +1,19 @@
+{
+    admin off
+    auto_https disable_redirects
+    skip_install_trust
+}
+
+https://localhost:8443, https://127.0.0.1:8443 {
+    bind 127.0.0.1
+    tls internal
+    @backend path /api/* /ws
+    handle @backend {
+        reverse_proxy 127.0.0.1:8008
+    }
+    handle {
+        root * src/dist
+        try_files {path} /index.html
+        file_server
+    }
+}

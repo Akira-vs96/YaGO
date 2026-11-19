@@ -7,6 +7,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.concurrency import run_in_threadpool
 from sqlalchemy import text
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
@@ -38,10 +39,15 @@ def health():
     return {"ok": True, "db": "connected"}
 
 
+def socket_identity(token):
+    with SessionLocal() as db:
+        return auth.session_user(db, token)
+
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    with SessionLocal() as db:
-        identity = auth.session_user(db, websocket.cookies.get("yago_session"))
+    token = websocket.cookies.get("yago_session")
+    identity = await run_in_threadpool(socket_identity, token)
     if not identity:
         await websocket.close(code=4401)
         return
@@ -57,10 +63,9 @@ async def websocket_endpoint(websocket: WebSocket):
             try:
                 await asyncio.wait_for(websocket.receive_text(), timeout=30)
             except asyncio.TimeoutError:
-                with SessionLocal() as db:
-                    if not auth.session_user(db, websocket.cookies.get("yago_session")):
-                        await websocket.close(code=4401)
-                        break
+                if not await run_in_threadpool(socket_identity, token):
+                    await websocket.close(code=4401)
+                    break
     except WebSocketDisconnect:
         pass
     finally:

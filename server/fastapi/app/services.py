@@ -54,12 +54,13 @@ def order_view(db, order_id):
     order = one(db, """SELECT o.*,p.address_text pickup,p.lat pickup_lat,p.lng pickup_lng,
         d.address_text dropoff,d.lat dropoff_lat,d.lng dropoff_lng,
         r.name restaurant_name, u.full_name customer_name,
-        pa.lat performer_lat,pa.lng performer_lng
+        pa.lat performer_lat,pa.lng performer_lng,rv.rating,rv.comment
         FROM orders o JOIN addresses p ON p.id=o.pickup_address_id
         JOIN addresses d ON d.id=o.dropoff_address_id
         LEFT JOIN restaurants r ON r.id=o.restaurant_id JOIN users u ON u.id=o.customer_id
         LEFT JOIN performers pf ON pf.id=o.performer_id
         LEFT JOIN addresses pa ON pa.id=pf.address_id
+        LEFT JOIN reviews rv ON rv.order_id=o.id
         WHERE o.id=:id""", id=order_id)
     if not order:
         raise HTTPException(404, "Заказ не найден")
@@ -73,6 +74,8 @@ def order_view(db, order_id):
         "restaurant": order["restaurant_name_snapshot"] or order["restaurant_name"],
         "total": str(order["total_amount"] or 0),
         "discount": str(order["discount_amount"]),
+        "review": {"rating": order["rating"], "comment": order["comment"]} if order["rating"] else None,
+        "surgeMultiplier": str(order["surge_multiplier"]),
         "delivery": str(order["delivery_amount"]) if order["delivery_amount"] is not None else None,
         "distanceMeters": order["distance_meters"], "durationSeconds": order["duration_seconds"],
         "routeGeometry": order["route_geometry"],
@@ -130,9 +133,16 @@ async def driving_route(start: Point, end: Point):
             if attempt:
                 raise HTTPException(503, "Маршрутизация временно недоступна") from exc
             await asyncio.sleep(0.3)
+    if not isinstance(data, dict) or not isinstance(data.get("routes", []), list):
+        raise HTTPException(503, "Сервис маршрутизации вернул некорректный ответ")
     route = next(iter(data.get("routes", [])), None)
     if not route:
         raise HTTPException(422, "Маршрут между точками не найден")
+    if (not isinstance(route, dict) or not isinstance(route.get("distance"), (int, float))
+            or not isinstance(route.get("duration"), (int, float)) or route["distance"] < 0
+            or route["duration"] < 0 or not isinstance(route.get("geometry"), dict)
+            or route["geometry"].get("type") != "LineString" or not route["geometry"].get("coordinates")):
+        raise HTTPException(503, "Сервис маршрутизации вернул некорректный маршрут")
     if len(ROUTE_CACHE) > 256:
         ROUTE_CACHE.clear()
     ROUTE_CACHE[key] = (time.monotonic(), route)
@@ -154,10 +164,14 @@ async def calculate_quote(db, body, customer_id, *, lock_tariff=False):
         tariff = active_tariff(db, body.type, lock=lock_tariff)
         distance = round(route["distance"])
         duration = round(route["duration"])
-        gross = amount(Decimal(tariff["base_fare"]) + Decimal(distance) / 1000 * Decimal(tariff["price_per_km"]))
+        multiplier = db.scalar(text("""SELECT CASE WHEN
+            (SELECT count(*) FROM orders WHERE service_type_code='taxi' AND status_code='pending') >=
+            greatest(1, (SELECT count(*) FROM performers WHERE type='driver' AND status='available'))
+            THEN 1.25 ELSE 1.00 END"""))
+        gross = amount((tariff["base_fare"] + Decimal(distance) / 1000 * tariff["price_per_km"]) * multiplier)
         discount, total = student_discount(db, customer_id, gross)
         return {"total": total, "discount": discount, "tariffId": str(tariff["id"]), "distanceMeters": distance,
-                "durationSeconds": duration, "geometry": route["geometry"]}
+                "durationSeconds": duration, "geometry": route["geometry"], "surgeMultiplier": multiplier}
     if not body.restaurantId or not body.items:
         raise HTTPException(422, "Выберите заведение и блюда")
     if len({line.menuItemId for line in body.items}) != len(body.items):
@@ -173,6 +187,7 @@ async def calculate_quote(db, body, customer_id, *, lock_tariff=False):
             raise HTTPException(422, "Одна из позиций недоступна")
         subtotal += item["price"] * line.quantity
         lines.append({**item, "quantity": line.quantity})
+    db.rollback()  # All catalog values above are plain snapshots. Release the read connection during routing.
     route = await driving_route(Point(address=restaurant["address_text"], lat=float(restaurant["lat"]),
                                       lng=float(restaurant["lng"])), body.end)
     tariff = active_tariff(db, body.type, lock=lock_tariff)
@@ -206,10 +221,14 @@ def restaurants(db: DB, q: str = Query("", max_length=100), category: str = ""):
     return result
 
 
+def public_quote(result):
+    return {k: str(v) if isinstance(v, Decimal) else v for k, v in result.items() if k not in {"lines", "restaurant"}}
+
+
 @router.post("/quotes")
 async def quote(body: QuoteInput, user: User, db: DB):
     result = await calculate_quote(db, body, user["id"])
-    return {k: str(v) if isinstance(v, Decimal) else v for k, v in result.items() if k not in {"lines", "restaurant"}}
+    return public_quote(result)
 
 
 @router.get("/orders")
@@ -241,18 +260,29 @@ def get_order(order_id: str, user: User, db: DB):
 async def create_order(body: CreateOrder, user: User, db: DB,
     idempotency_key: Annotated[str, Header(alias="Idempotency-Key", min_length=8, max_length=100)]):
     require(user, "client")
-    db.execute(text("SELECT pg_advisory_xact_lock(hashtextextended(:key,0))"),
-        {"key": f"order:{user['id']}:{idempotency_key}"})
     payload_hash = hashlib.sha256(json.dumps(body.model_dump(mode="json"), sort_keys=True).encode()).hexdigest()
-    old = one(db, "SELECT id,request_hash FROM orders WHERE customer_id=:user AND idempotency_key=:key",
-        user=user["id"], key=idempotency_key)
-    if old:
+    def previous_order():
+        old = one(db, "SELECT id,request_hash FROM orders WHERE customer_id=:user AND idempotency_key=:key",
+            user=user["id"], key=idempotency_key)
+        if not old:
+            return None
         if old["request_hash"] != payload_hash:
             raise HTTPException(409, "Этот ключ уже использован для другого заказа")
         return order_view(db, old["id"])
+    existing = previous_order()
+    if existing:
+        return existing
+    db.rollback()
     result = await calculate_quote(db, body, user["id"], lock_tariff=True)
+    # Never hold the idempotency lock while waiting for the external route service.
+    db.execute(text("SELECT pg_advisory_xact_lock(hashtextextended(:key,0))"),
+        {"key": f"order:{user['id']}:{idempotency_key}"})
+    existing = previous_order()
+    if existing:
+        return existing
     if body.tariffId != result["tariffId"] or amount(body.quotedTotal) != result["total"]:
-        raise HTTPException(409, {"message": "Стоимость изменилась. Подтвердите новую цену", "total": str(result["total"]), "tariffId": result["tariffId"]})
+        raise HTTPException(409, {"message": "Стоимость изменилась. Подтвердите новую цену",
+            **public_quote(result)})
     if body.type == "food":
         pickup_id = result["restaurant"]["address_id"]
     else:
@@ -265,10 +295,10 @@ async def create_order(body: CreateOrder, user: User, db: DB,
         pickup_address_id,dropoff_address_id,restaurant_id,total_amount,discount_amount,distance_meters,duration_seconds,
         idempotency_key,request_hash,pickup_snapshot,dropoff_snapshot,
         pickup_lat_snapshot,pickup_lng_snapshot,dropoff_lat_snapshot,dropoff_lng_snapshot,
-        restaurant_name_snapshot,delivery_amount,route_geometry)
+        restaurant_name_snapshot,delivery_amount,route_geometry,surge_multiplier)
         VALUES (:user,:service,'pending',:tariff,:pickup,:dropoff,:restaurant,
         :total,:discount,:distance,:duration,:key,:hash,:pickup_snapshot,:dropoff_snapshot,
-        :pickup_lat,:pickup_lng,:dropoff_lat,:dropoff_lng,:restaurant_name,:delivery,CAST(:route AS jsonb)) RETURNING id"""),
+        :pickup_lat,:pickup_lng,:dropoff_lat,:dropoff_lng,:restaurant_name,:delivery,CAST(:route AS jsonb),:multiplier) RETURNING id"""),
         {"user": user["id"], "service": body.type, "tariff": result["tariffId"], "pickup": pickup_id,
          "dropoff": dropoff_id, "restaurant": body.restaurantId if body.type == "food" else None,
          "total": result["total"], "discount": result["discount"],
@@ -280,7 +310,7 @@ async def create_order(body: CreateOrder, user: User, db: DB,
          "dropoff_lat": body.end.lat, "dropoff_lng": body.end.lng,
          "restaurant_name": result["restaurant"]["name"] if body.type == "food" else None,
          "delivery": result["delivery"] if body.type == "food" else None,
-         "route": json.dumps(result["geometry"])}).scalar_one()
+         "route": json.dumps(result["geometry"]), "multiplier": result.get("surgeMultiplier", 1)}).scalar_one()
     if body.type == "food":
         for item in result["lines"]:
             db.execute(text("""INSERT INTO order_items(order_id,menu_item_id,quantity,unit_price,item_name_snapshot)
@@ -292,6 +322,7 @@ async def create_order(body: CreateOrder, user: User, db: DB,
     audit(db, user["id"], "order_create", "order", order_id)
     db.commit()
     created = order_view(db, order_id)
+    db.rollback()
     await publish("orderCreated", created)
     return created
 
@@ -359,6 +390,7 @@ async def update_status(order_id: str, body: StatusInput, user: User, db: DB):
     audit(db, user["id"], "order_status", "order", order_id)
     db.commit()
     updated = order_view(db, order_id)
+    db.rollback()
     await publish("orderStatusUpdated", updated)
     return updated
 
@@ -375,17 +407,21 @@ def review(order_id: str, body: ReviewInput, user: User, db: DB):
         raise HTTPException(404, "Заказ не найден")
     if order["status_code"] != "completed":
         raise HTTPException(409, "Отзыв доступен после завершения")
-    if one(db, "SELECT 1 FROM reviews WHERE order_id=:id", id=order_id):
+    inserted = db.scalar(text("""INSERT INTO reviews(order_id,customer_id,rating,comment)
+        VALUES (:id,:user,:rating,:comment) ON CONFLICT (order_id) DO NOTHING RETURNING id"""),
+        {"id": order_id, "user": user["id"], "rating": body.rating, "comment": body.comment.strip()})
+    if not inserted:
         raise HTTPException(409, "Отзыв уже оставлен")
-    db.execute(text("INSERT INTO reviews(order_id,customer_id,rating,comment) VALUES (:id,:user,:rating,:comment)"),
-        {"id": order_id, "user": user["id"], "rating": body.rating, "comment": body.comment})
     db.commit()
     return {"ok": True}
 
 
 def release_expired(db):
-    expired = db.execute(text("""UPDATE scooter_reservations SET status='expired'
-        WHERE status='active' AND expires_at<=now() RETURNING scooter_id""")).scalars().all()
+    expired = db.execute(text("""WITH due AS MATERIALIZED (
+        SELECT id FROM scooter_reservations WHERE status='active' AND expires_at<=now()
+        ORDER BY id FOR UPDATE)
+        UPDATE scooter_reservations r SET status='expired' FROM due
+        WHERE r.id=due.id RETURNING r.scooter_id""")).scalars().all()
     for scooter_id in expired:
         db.execute(text("UPDATE scooters SET status='available' WHERE id=:id AND status='reserved'"), {"id": scooter_id})
 
@@ -528,8 +564,11 @@ def start_rental(reservation_id: str, body: StartInput, user: User, db: DB):
     if existing:
         return rental_view(db, existing["id"])
     if reservation["status"] != "active" or reservation["expires_at"] <= datetime.now(timezone.utc):
-        release_expired(db)
-        db.commit()
+        if reservation["status"] == "active":
+            db.execute(text("UPDATE scooter_reservations SET status='expired' WHERE id=:id"), {"id": reservation_id})
+            db.execute(text("UPDATE scooters SET status='available' WHERE id=:id AND status='reserved'"),
+                       {"id": scooter["id"]})
+            db.commit()
         raise HTTPException(409, "Срок бронирования истёк")
     # Bookings from before migration 007 had no saved tariff.
     tariff_id = reservation["tariff_id"] or active_tariff(db, "scooter", lock=True)["id"]
@@ -774,12 +813,15 @@ def delete_zone(zone_id: str, user: User, db: DB):
 @router.get("/operator/scooters")
 def operator_scooters(user: User, db: DB):
     require(user, "operator", "admin")
+    release_expired(db)
+    db.commit()
     return [scooter_view(r) for r in many(db, "SELECT * FROM scooters ORDER BY code")]
 
 
 @router.patch("/operator/scooters/{scooter_id}")
 def edit_scooter(scooter_id: str, body: ScooterUpdate, user: User, db: DB):
     require(user, "operator", "admin")
+    release_expired(db)
     scooter = one(db, "SELECT * FROM scooters WHERE id=:id FOR UPDATE", id=scooter_id)
     if not scooter:
         raise HTTPException(404, "Самокат не найден")

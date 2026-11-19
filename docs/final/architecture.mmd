@@ -1,0 +1,20 @@
+flowchart LR
+    Client["Клиент · телефон или ноутбук"]
+    Worker["Водитель / курьер"]
+    Staff["Оператор / администратор"]
+    Proxy["Caddy · HTTPS / WSS"]
+    UI["React + Leaflet<br/>собранный интерфейс"]
+    API["FastAPI · один worker<br/>сессии, роли, заказы и аренда"]
+    Events["WebSocket<br/>проверка сессии и получателей"]
+    DB[("PostgreSQL + PostGIS<br/>схема 9")]
+    Maps["Nominatim · адрес<br/>OSRM · маршрут"]
+    Tiles["OpenStreetMap · тайлы"]
+    Client & Worker & Staff --> Proxy
+    Proxy --> UI
+    Proxy -->|REST| API
+    Proxy <-->|WSS| Events
+    API --> DB
+    API --> Events
+    Events --> DB
+    API --> Maps
+    UI --> Tiles

@@ -21,7 +21,6 @@ from .db import get_db, row_dict
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 DB = Annotated[Session, Depends(get_db)]
 SESSION_SECONDS = 60 * 60 * 24 * 14
-FAILED_LOGINS = {}
 
 
 def digest(value: str) -> str:
@@ -81,7 +80,10 @@ def current(request: Request, db: DB) -> dict:
         allowed = [v.strip() for v in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")]
         if origin and origin not in allowed:
             raise HTTPException(403, "Недопустимый источник запроса")
-    return {**session, **public_user(db, str(session["user_id"]))}
+    identity = {**session, **public_user(db, str(session["user_id"]))}
+    # Release the read connection before the handler awaits maps or WebSocket I/O.
+    db.rollback()
+    return identity
 
 
 User = Annotated[dict, Depends(current)]
@@ -162,17 +164,18 @@ def register(body: Registration, response: Response, request: Request, db: DB):
 def login(body: Credentials, response: Response, request: Request, db: DB):
     verify_origin(request)
     email = str(body.email).lower()
-    now = time.monotonic()
-    attempts = [t for t in FAILED_LOGINS.get(email, []) if now - t < 300]
-    if len(attempts) >= 5:
+    params = {"key": digest(email)}
+    db.execute(text("SELECT pg_advisory_xact_lock(hashtextextended(:key, 1))"), params)
+    db.execute(text("DELETE FROM login_failures WHERE attempted_at < clock_timestamp() - interval '5 minutes'"))
+    if db.scalar(text("SELECT count(*) FROM login_failures WHERE email_hash=:key"), params) >= 5:
         failed_login(db, email, "login_rate_limited")
         raise HTTPException(429, "Слишком много попыток. Повторите через 5 минут")
     user = db.execute(text("SELECT id,password_hash,two_factor_secret FROM users WHERE lower(email)=:email AND is_active"), {"email": email}).first()
     if not user or not verify_password(body.password, user.password_hash):
-        FAILED_LOGINS[email] = attempts + [now]
+        db.execute(text("INSERT INTO login_failures(email_hash) VALUES (:key)"), params)
         failed_login(db, email, "login_failed", user.id if user else None)
         raise HTTPException(401, "Неверная почта или пароль")
-    FAILED_LOGINS.pop(email, None)
+    db.execute(text("DELETE FROM login_failures WHERE email_hash=:key"), params)
     if user.two_factor_secret:
         token = secrets.token_urlsafe(40)
         db.execute(text("""INSERT INTO login_challenges(token_hash,user_id,expires_at)
