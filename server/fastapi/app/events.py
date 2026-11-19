@@ -3,6 +3,7 @@ import json
 from uuid import UUID
 
 from fastapi import WebSocket
+from starlette.concurrency import run_in_threadpool
 from sqlalchemy import text
 
 from .db import SessionLocal
@@ -10,10 +11,7 @@ from .db import SessionLocal
 connections: dict[WebSocket, UUID] = {}
 
 
-async def publish(event: str, data: dict):
-    subscribers = tuple(connections.items())
-    if not subscribers:
-        return
+def allowed_for_event(event, data, subscribers):
     recipients = set()
     with SessionLocal() as db:
         if event == "driverMoved":
@@ -23,7 +21,7 @@ async def publish(event: str, data: dict):
             for row in rows:
                 recipients.update((str(row.customer_id), str(row.user_id)))
             if not recipients:
-                return
+                return set()
         else:
             recipients.add(data["customerId"])
             if data.get("performerId"):
@@ -31,7 +29,7 @@ async def publish(event: str, data: dict):
                     {"id": data["performerId"]}).scalar()
                 if performer_user:
                     recipients.add(str(performer_user))
-        allowed_sessions = set(db.execute(text("""SELECT s.id FROM sessions s
+        return set(db.execute(text("""SELECT s.id FROM sessions s
             JOIN users u ON u.id=s.user_id
             WHERE s.id=ANY(CAST(:sessions AS uuid[]))
               AND s.revoked_at IS NULL AND s.expires_at>now() AND u.is_active
@@ -40,6 +38,13 @@ async def publish(event: str, data: dict):
                   WHERE r.user_id=s.user_id AND r.role_code IN ('operator','admin')
               ))"""), {"sessions": [session for _, session in subscribers],
                          "recipients": list(recipients)}).scalars())
+
+
+async def publish(event: str, data: dict):
+    subscribers = tuple(connections.items())
+    if not subscribers:
+        return
+    allowed_sessions = await run_in_threadpool(allowed_for_event, event, data, subscribers)
     message = json.dumps({"event": event, "data": data}, ensure_ascii=False, default=str)
     for websocket, session in subscribers:
         if session in allowed_sessions:

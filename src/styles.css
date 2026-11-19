@@ -99,6 +99,7 @@ h2 { font-size: 1.05rem; letter-spacing: -.015em }
 .history-grid, .office-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start }
 .history-item, .office-order, .session-row { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 14px 0; border-top: 1px solid var(--line); font-size: .82rem; min-width: 0 }
 .history-item > div, .office-order > div { min-width: 0 }
+.order-review { white-space: normal; max-width: 20rem; min-width: 0; }
 .history-item strong, .history-item small, .history-item b, .session-row small, .office-order small { display: block }
 .history-item p, .office-order p { color: var(--muted); overflow-wrap: anywhere; margin: 6px 0; line-height: 1.45 }
 .history-item small, .office-order small, .session-row small { color: var(--muted); margin-top: 3px }

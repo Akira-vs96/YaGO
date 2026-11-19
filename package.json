@@ -16,6 +16,7 @@
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "11.17.0",
     "concurrently": "^9.0.1",
+    "playwright-core": "1.56.1",
     "puppeteer": "24.43.1"
   }
 }

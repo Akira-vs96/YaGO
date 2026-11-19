@@ -100,6 +100,7 @@ def seed():
         people = (
             ("client@demo.yago.test", "Айдана Нур", "client", None),
             ("driver@demo.yago.test", "Данияр Ермек", "driver", "driver"),
+            ("driver2@demo.yago.test", "Алихан Садыков", "driver", "driver"),
             ("courier@demo.yago.test", "Мадина Сагат", "courier", "courier"),
             ("operator@demo.yago.test", "Аружан Серик", "operator", None),
             ("admin@demo.yago.test", "Тимур Асан", "admin", None),
@@ -114,6 +115,15 @@ def seed():
             if performer_type:
                 db.execute(text("""INSERT INTO performers(user_id,type) VALUES (:id,:type)
                     ON CONFLICT (user_id) DO NOTHING"""), {"id": user_id, "type": performer_type})
+                if performer_type == "driver":
+                    driver = db.execute(text("""SELECT id FROM performers WHERE user_id=:id
+                        AND address_id IS NULL AND status='available' FOR UPDATE"""), {"id": user_id}).scalar()
+                    if driver:
+                        lat, lng = (51.129, 71.430) if email.startswith("driver@") else (51.300, 71.600)
+                        address = db.scalar(text("""INSERT INTO addresses(address_text,lat,lng)
+                            VALUES ('Учебная позиция водителя',:lat,:lng) RETURNING id"""), {"lat": lat, "lng": lng})
+                        db.execute(text("UPDATE performers SET address_id=:address WHERE id=:id"),
+                                   {"address": address, "id": driver})
 
         places = (
             ("Зелёный двор", "Казахская кухня", "проспект Кабанбай батыра, 21", 51.1296, 71.4305,
