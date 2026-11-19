@@ -10,7 +10,7 @@ from fastapi import WebSocketDisconnect
 from sqlalchemy import text
 
 from app import events, services
-from app.auth import totp
+from app.auth import session_user, totp, valid_totp
 from app.db import SessionLocal
 from app.main import app
 
@@ -76,10 +76,10 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
     with SessionLocal.begin() as db:
         demo_driver = db.scalar(text("""SELECT p.id FROM performers p JOIN users u ON u.id=p.user_id
             WHERE u.email='driver@demo.yago.test'"""))
-        near = db.scalar(text("""INSERT INTO addresses(address_text,lat,lng)
-            VALUES ('Точка рядом',51.128,71.421) RETURNING id"""))
+        far_start = db.scalar(text("""INSERT INTO addresses(address_text,lat,lng)
+            VALUES ('Позиция до обновления',52.0,72.0) RETURNING id"""))
         db.execute(text("UPDATE performers SET address_id=:address,status='available' WHERE id=:id"),
-                   {"address": near, "id": demo_driver})
+                   {"address": far_start, "id": demo_driver})
         far_user = db.scalar(text("""INSERT INTO users(email,full_name)
             VALUES (:email,'Дальний водитель') RETURNING id"""),
             {"email": f"far-driver-{suffix}@test.yago.local"})
@@ -89,6 +89,8 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
         db.execute(text("""INSERT INTO performers(id,user_id,address_id,type,status)
             VALUES (:id,:user,:address,'driver','available')"""),
             {"id": far_id, "user": far_user, "address": far})
+    assert request(other, "POST", "/api/performers/me/position", point_a).status_code == 403
+    check(request(driver, "POST", "/api/performers/me/position", point_a), 200)
     assert request(customer, "POST", "/api/auth/student/verify", {"code": "wrong"}).status_code == 422
     check(request(customer, "POST", "/api/auth/student/verify", {"code": "YAGO-STUDENT"}), 200)
 
@@ -119,14 +121,30 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
             check(request(driver, "POST", f"/api/trace/{performer_id}",
                           {"lat": 51.13, "lng": 71.42}), 200)
             assert check(request(customer, "GET", f"/api/orders/{order['id']}"), 200)["performerPosition"]["lat"] == 51.13
-            identities = [check(request(client, "GET", "/api/auth/me"), 200)
-                          for client in (customer, other, driver, admin)]
-            sockets = [FakeSocket() for _ in identities]
-            events.connections.update(zip(sockets, identities))
+            with SessionLocal() as db:
+                sessions = [session_user(db, client.cookies.get("yago_session"))
+                            for client in (customer, other, driver, admin)]
+            sockets = [FakeSocket() for _ in sessions]
+            events.connections.update(zip(sockets, (session["session_id"] for session in sessions)))
             try:
-                asyncio.run(events.publish("orderStatusUpdated",
-                                           check(request(customer, "GET", f"/api/orders/{order['id']}"), 200)))
-                assert [bool(socket.messages) for socket in sockets] == [True, False, True, True]
+                active_order = check(request(customer, "GET", f"/api/orders/{order['id']}"), 200)
+                asyncio.run(events.publish("orderStatusUpdated", active_order))
+                asyncio.run(events.publish("driverMoved", {"id": performer_id, "lat": 51.13, "lng": 71.42}))
+                assert [len(socket.messages) for socket in sockets] == [2, 0, 2, 2]
+                role_url = f"/api/admin/users/{sessions[1]['user_id']}/role"
+                check(request(admin, "PATCH", role_url, {"role": "operator", "enabled": True}), 200)
+                asyncio.run(events.publish("orderStatusUpdated", active_order))
+                assert len(sockets[1].messages) == 1
+                check(request(admin, "PATCH", role_url, {"role": "operator", "enabled": False}), 200)
+                asyncio.run(events.publish("orderStatusUpdated", active_order))
+                assert len(sockets[1].messages) == 1
+                check(request(admin, "PATCH", role_url, {"role": "operator", "enabled": True}), 200)
+                check(request(other, "POST", "/api/auth/logout"), 200)
+                asyncio.run(events.publish("orderStatusUpdated", active_order))
+                assert len(sockets[1].messages) == 1
+                check(request(admin, "PATCH", role_url, {"role": "operator", "enabled": False}), 200)
+                check(request(other, "POST", "/api/auth/login",
+                              {"email": f"other-{suffix}@test.yago.local", "password": password}), 200)
             finally:
                 for socket in sockets:
                     events.connections.pop(socket, None)
@@ -178,15 +196,39 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
     reservation = check(request(customer, "POST", "/api/scooters/reserve",
                                 {"scooterId": scooter["id"]}, str(uuid4())), 201)
     assert request(other, "POST", "/api/scooters/reserve", {"scooterId": scooter["id"]}, str(uuid4())).status_code == 409
+    booked_rate = check(request(customer, "GET", "/api/reservations"), 200)[0]["tariff"]
+    assert request(other, "GET", f"/api/reservations/{reservation['id']}/demo-qr").status_code == 404
     qr = check(request(customer, "GET", f"/api/reservations/{reservation['id']}/demo-qr"), 200)["qrCode"]
-    rental = check(request(customer, "POST", f"/api/reservations/{reservation['id']}/start", {"qrCode": qr}), 200)
-    old_rate = rental["tariff"]
+    assert qr.startswith("yago:demo:")
+    assert request(customer, "POST", f"/api/reservations/{reservation['id']}/start",
+                   {"qrCode": f"yago:demo:{uuid4()}"}).status_code == 422
     new_rate = check(request(operator, "POST", "/api/operator/tariffs",
         {"service": "scooter", "name": f"Новая версия {suffix}", "baseFare": "999",
          "pricePerKm": "0", "pricePerMinute": "999"}), 201)
+    assert request(operator, "DELETE", f"/api/operator/tariffs/{booked_rate['id']}").status_code == 409
+    rental = check(request(customer, "POST", f"/api/reservations/{reservation['id']}/start", {"qrCode": qr}), 200)
+    old_rate = rental["tariff"]
+    assert old_rate == booked_rate
     assert check(request(customer, "POST", f"/api/reservations/{reservation['id']}/start", {"qrCode": qr}), 200)["id"] == rental["id"]
     assert request(other, "POST", f"/api/rentals/{rental['id']}/finish", point_a).status_code == 404
     assert request(customer, "POST", f"/api/rentals/{rental['id']}/finish", {"lat": 50.0, "lng": 70.0}).status_code == 409
+    assert request(customer, "POST", f"/api/rentals/{rental['id']}/finish",
+                   {"lat": 51.09, "lng": 71.42}).status_code == 409
+    outside = check(request(operator, "POST", "/api/operator/zones",
+        {"name": f"Парковка вне зоны {suffix}", "kind": "parking",
+         "south": 50.0, "north": 50.01, "west": 70.0, "east": 70.01}), 201)
+    assert request(customer, "POST", f"/api/rentals/{rental['id']}/finish",
+                   {"lat": 50.005, "lng": 70.005}).status_code == 409
+    check(request(operator, "PATCH", f"/api/operator/zones/{outside['id']}/status", {"active": False}), 200)
+    check(request(operator, "DELETE", f"/api/operator/zones/{outside['id']}"), 200)
+    restricted = check(request(operator, "POST", "/api/operator/zones",
+        {"name": f"Запрет {suffix}", "kind": "no_parking", "south": point_b["lat"],
+         "north": 51.14, "west": 71.43, "east": 71.44}), 201)
+    denied = check(request(customer, "POST", f"/api/rentals/{rental['id']}/finish", point_b), 409)
+    assert "запрещена" in denied["detail"]
+    check(request(operator, "PATCH", f"/api/operator/zones/{restricted['id']}/status", {"active": False}), 200)
+    check(request(operator, "DELETE", f"/api/operator/zones/{restricted['id']}"), 200)
+    assert check(request(customer, "GET", "/api/rentals"), 200)[0]["status"] == "active"
     finished = check(request(customer, "POST", f"/api/rentals/{rental['id']}/finish", point_a), 200)
     assert finished["status"] == "completed"
     expected_total = Decimal(old_rate["baseFare"]) + Decimal(old_rate["pricePerMinute"])
@@ -196,7 +238,10 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
     check(request(operator, "PATCH", f"/api/operator/tariffs/{new_rate['id']}",
         {"service": "scooter", "name": f"Исправленная версия {suffix}", "baseFare": "998",
          "pricePerKm": "0", "pricePerMinute": "998"}), 200)
-    assert any(t["id"] == new_rate["id"] for t in check(request(operator, "GET", "/api/operator/tariffs"), 200))
+    saved_rate = next(t for t in check(request(operator, "GET", "/api/operator/tariffs"), 200)
+                      if t["id"] == new_rate["id"])
+    assert saved_rate["name"] == f"Исправленная версия {suffix}"
+    assert Decimal(saved_rate["baseFare"]) == Decimal(saved_rate["pricePerMinute"]) == Decimal(998)
     check(request(operator, "DELETE", f"/api/operator/tariffs/{new_rate['id']}"), 200)
     assert request(operator, "PATCH", f"/api/operator/tariffs/{old_rate['id']}",
         {"service": "scooter", "name": "Нельзя менять", "baseFare": "1",
@@ -261,8 +306,12 @@ with TestClient(app) as customer, TestClient(app) as other, TestClient(app) as o
     assert check(request(other, "POST", "/api/auth/login",
                          {"email": f"other-{suffix}@test.yago.local", "password": password}), 200)["requires2fa"]
     assert request(other, "GET", "/api/auth/me").status_code == 401
+    wrong_code = next(f"{n:06d}" for n in range(4) if not valid_totp(setup["secret"], f"{n:06d}"))
+    assert request(other, "POST", "/api/auth/verify-2fa", {"code": wrong_code}).status_code == 401
+    assert request(other, "GET", "/api/auth/me").status_code == 401
     check(request(other, "POST", "/api/auth/verify-2fa", {"code": code}), 200)
     assert request(other, "GET", "/api/auth/me").status_code == 200
+    assert request(other, "POST", "/api/auth/verify-2fa", {"code": code}).status_code == 401
     check(request(customer, "POST", "/api/auth/logout"), 200)
     assert request(customer, "GET", "/api/auth/me").status_code == 401
 with TestClient(app) as anonymous:

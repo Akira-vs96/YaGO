@@ -34,13 +34,13 @@ def migrate():
         version = connection.scalar(text("SELECT max(version) FROM schema_versions")) or 0
         if version < 2:
             raise RuntimeError("Incomplete schema version history. Back up and inspect the database before upgrading.")
-        if version < 7:
+        if version < 8:
             populated = connection.scalar(text("SELECT EXISTS(SELECT 1 FROM users LIMIT 1)"))
             if populated and os.getenv("BACKUP_CONFIRMED") != "1":
                 raise RuntimeError("Database contains data. Run pg_dump, then set BACKUP_CONFIRMED=1 before upgrading.")
             for target, filename in ((3, "002_product.sql"), (4, "003_integrity.sql"),
                                      (5, "004_education.sql"), (6, "005_order_facts.sql"),
-                                     (7, "006_week09_10.sql")):
+                                     (7, "006_week09_10.sql"), (8, "007_p4_rental.sql")):
                 if version < target:
                     with connection.connection.cursor() as cursor:
                         cursor.execute((MIGRATIONS / filename).read_text(), prepare=False)
